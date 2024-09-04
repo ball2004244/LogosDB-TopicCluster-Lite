@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import sqlite3
 import time
+import multiprocessing as mp
 import pandas as pd
 
 
@@ -64,13 +65,29 @@ class LogosCluster:
                 content, updated_at = datum
                 with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
                     cursor = conn.cursor()
-                    cursor.execute(f'INSERT INTO {self.table_name} (Content, UpdatedAt) VALUES (?, ?)', (content, updated_at))
+                    cursor.execute(
+                        f'INSERT INTO {self.table_name} (Content, UpdatedAt) VALUES (?, ?)', (content, updated_at))
                     conn.commit()
             return True
-    
+
         except Exception as e:
             print(f'Error at LogosCluster insert: {e}')
             return False
+
+    def process_group(self, topic: str, data: pd.DataFrame) -> None:
+        '''
+        Process each group of data in parallel
+        '''
+        try:
+            data['UpdatedAt'] = datetime.now().isoformat()
+
+            # Convert DataFrame to list of tuples
+            data_tuples = list(
+                data[['content', 'UpdatedAt']].itertuples(index=False, name=None))
+
+            self.insert(data_tuples, topic)
+        except Exception as e:
+            print(f'Error at LogosCluster process_group: {e}')
 
     def auto_insert(self) -> bool:
         '''
@@ -79,25 +96,27 @@ class LogosCluster:
         Note that each topic serves as node name for now
         '''
         try:
-            # TODO: Implement this function
-
             # First read the input file
             if self.input_file is None:
                 raise FileNotFoundError('LogosCluster: Input file is not set')
 
-            INPUT_CHUNK_SIZE = 1000
+            INPUT_CHUNK_SIZE = 10000
 
             # the input file only have 2 cols: content and topic
             headers = ['content', 'topic']
-            for chunk in pd.read_csv(self.input_file, chunksize=INPUT_CHUNK_SIZE, usecols=[0, 1], header=None, names=headers):
-                for topic, data in chunk.groupby('topic'):
-                    data['UpdatedAt'] = datetime.now().isoformat()
+            count = 0
+            with mp.Pool(mp.cpu_count()) as pool:
+                for chunk in pd.read_csv(self.input_file, chunksize=INPUT_CHUNK_SIZE, usecols=[0, 1], header=None, names=headers):
+                    print(f'Processing chunk {count}, CHUNK SIZE: {len(chunk)}')
 
-                    # Convert DataFrame to list of tuples
-                    data_tuples = list(
-                        data[['content', 'UpdatedAt']].itertuples(index=False, name=None))
-
-                    self.insert(data_tuples, topic)
+                    # Process 1 group at a time (single-process approach)
+                    # print(f'Processing chunk of data sequentially...')
+                    # self.process_group(chunk['topic'].iloc[0], chunk)
+                    
+                    # Process each group in parallel (multiprocessing approach)
+                    # print(f'Utilzing {mp.cpu_count()} cores to process data...')
+                    pool.starmap(self.process_group, [
+                                 (topic, data) for topic, data in chunk.groupby('topic')])
 
             return True
 
@@ -127,7 +146,10 @@ class LogosCluster:
 def main():
     in_dir = 'inputs'
     metadata_file = 'metadata.txt'
-    input_file = 'inp-10k.csv'  # ! Test on smaller dataset
+    # input_file = 'inp-10k.csv'  # ! Test on smaller dataset
+    input_file = 'inp-100k.csv'
+    
+    print('Start processing...')
     start = time.perf_counter()
     # First build the cluster
     cluster = LogosCluster()
@@ -137,12 +159,14 @@ def main():
     cluster.set_input_file(os.path.join(in_dir, input_file))
 
     # Build the cluster
+    print('Building the cluster...')
     cluster.build_cluster()
 
     # Populate the cluster with data
+    print('Populating the cluster with data...')
     cluster.auto_insert()
 
-    print(f'Takes {time.perf_counter() - start} seconds to process')
+    print(f'Takes {time.perf_counter() - start:.2f} seconds to process')
 
 if __name__ == '__main__':
     main()
