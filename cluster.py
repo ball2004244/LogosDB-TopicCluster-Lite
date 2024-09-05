@@ -6,6 +6,9 @@ import time
 import multiprocessing as mp
 import pandas as pd
 
+'''
+This file contains the LogosCluster class, which is responsible for building a distributed system of SQLite databases.
+'''
 
 class LogosCluster:
     def __init__(self) -> None:

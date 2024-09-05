@@ -6,8 +6,9 @@ def main():
     print('[Step 1] LAUNCHING LOGOS CLUSTER!')
     in_dir = 'inputs'
     metadata_file = 'metadata.txt'
+    input_file = 'input.csv'
     # input_file = 'inp-10k.csv'  # ! Test on smaller dataset
-    input_file = 'inp-100k.csv'
+    # input_file = 'inp-100k.csv'
     
     print('Start processing...')
     start = time.perf_counter()
@@ -31,11 +32,12 @@ def main():
     cluster.build_cluster()
     print(f'Build cluster: {time.perf_counter() - step_start:.2f} seconds')
 
+    #! Only populate the cluster with data when needed
     # Populate the cluster with data
-    step_start = time.perf_counter()
-    print('Populating the cluster with data...')
-    cluster.auto_insert()
-    print(f'Populate cluster: {time.perf_counter() - step_start:.2f} seconds')
+    # step_start = time.perf_counter()
+    # print('Populating the cluster with data...')
+    # cluster.auto_insert()
+    # print(f'Populate cluster: {time.perf_counter() - step_start:.2f} seconds')
 
     # Step 2: Launch SumDB (VectorDB) with IndexTable
 
