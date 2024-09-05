@@ -74,6 +74,22 @@ class LogosCluster:
             print(f'Error at LogosCluster insert: {e}')
             return False
 
+    def insert_batch(self, data: List[Tuple[str, str]], node: str) -> bool:
+        '''
+        Insert data into 1 node in batch
+        '''
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.executemany(
+                    f'INSERT INTO {self.table_name} (Content, UpdatedAt) VALUES (?, ?)', data)
+                conn.commit()
+            return True
+
+        except Exception as e:
+            print(f'Error at LogosCluster insert_batch: {e}')
+            return False
+
     def process_group(self, topic: str, data: pd.DataFrame) -> None:
         '''
         Process each group of data in parallel
@@ -85,7 +101,7 @@ class LogosCluster:
             data_tuples = list(
                 data[['content', 'UpdatedAt']].itertuples(index=False, name=None))
 
-            self.insert(data_tuples, topic)
+            self.insert_batch(data_tuples, topic)
         except Exception as e:
             print(f'Error at LogosCluster process_group: {e}')
 
