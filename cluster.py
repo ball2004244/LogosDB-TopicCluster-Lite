@@ -108,6 +108,7 @@ class LogosCluster:
             with mp.Pool(mp.cpu_count()) as pool:
                 for chunk in pd.read_csv(self.input_file, chunksize=INPUT_CHUNK_SIZE, usecols=[0, 1], header=None, names=headers):
                     print(f'Processing chunk {count}, CHUNK SIZE: {len(chunk)}')
+                    start = time.perf_counter()
 
                     # Process 1 group at a time (single-process approach)
                     # print(f'Processing chunk of data sequentially...')
@@ -117,6 +118,8 @@ class LogosCluster:
                     # print(f'Utilzing {mp.cpu_count()} cores to process data...')
                     pool.starmap(self.process_group, [
                                  (topic, data) for topic, data in chunk.groupby('topic')])
+                    count += 1
+                    print(f'Finished processing chunk {count} in {time.perf_counter() - start:.2f} seconds')
 
             return True
 
@@ -141,32 +144,3 @@ class LogosCluster:
         except Exception as e:
             print(f'Error at LogosCluster query: {e}')
             return None
-
-
-def main():
-    in_dir = 'inputs'
-    metadata_file = 'metadata.txt'
-    # input_file = 'inp-10k.csv'  # ! Test on smaller dataset
-    input_file = 'inp-100k.csv'
-    
-    print('Start processing...')
-    start = time.perf_counter()
-    # First build the cluster
-    cluster = LogosCluster()
-
-    # Then set metadata and input file
-    cluster.set_metadata(os.path.join(in_dir, metadata_file))
-    cluster.set_input_file(os.path.join(in_dir, input_file))
-
-    # Build the cluster
-    print('Building the cluster...')
-    cluster.build_cluster()
-
-    # Populate the cluster with data
-    print('Populating the cluster with data...')
-    cluster.auto_insert()
-
-    print(f'Takes {time.perf_counter() - start:.2f} seconds to process')
-
-if __name__ == '__main__':
-    main()
