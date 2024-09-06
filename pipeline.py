@@ -51,10 +51,18 @@ def main():
     print(f'Launch SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     # Step 3: Summarize all content from the cluster to SumDB with Summarizer
-    print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
+    # print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
+    # step_start = time.perf_counter()
+    # result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=64)
+    # print(f'Summarize cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+
+    #! INSTEAD OF SUMMARIZING THE WHOLE CLUSTER, WE CAN SUMMARIZE A SINGLE NODE
+    node_name = 'Astronomy' # about 200k rows ~ 6h to process
+    CHUNK_SIZE = 128
+    print(f'[Step 3] SUMMARIZING NODE {node_name} TO SUMDB, CHUNK SIZE: {CHUNK_SIZE}')
     step_start = time.perf_counter()
-    result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=64)
-    print(f'Summarize cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+    result = sumdb.summarize_node(node_name, cluster, CHUNK_SIZE=128)
+    print(f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     if not result:
         print('Unexpected error occurred during summarization, terminating...')
