@@ -4,7 +4,7 @@ A lighter version of TopicCluster, built fully with Python and SQLite
 ## Prerequisites
 - Python 3.6 or higher
 - SQLite3
-- Marqo VectorDB
+- Docker
 
 ## Installation
 1. Clone the repository
@@ -12,6 +12,7 @@ A lighter version of TopicCluster, built fully with Python and SQLite
 ```bash
 pip install -r requirements.txt
 ```
+
 3. Install marqo-vectordb
 ```bash
 bash scripts/setup_sumdb.sh
@@ -23,3 +24,9 @@ bash scripts/setup_sumdb.sh
 ```bash
 python3 pipeline.py
 ```
+
+## Features
+- [x] LogosCluster (Data Storage)
+- [x] SumDB (VectorDB)
+- [ ] SumAI (Summarization)
+- [ ] SmartQuery (Querying for QnA)

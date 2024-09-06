@@ -1,9 +1,14 @@
 from cluster import LogosCluster
+from sumdb import SumDB
 import time
 import os
 
+'''
+This file contains the main pipeline for the Logos project.
+'''
+
 def main():
-    print('[Step 1] LAUNCHING LOGOS CLUSTER!')
+    print('[Step 1] LAUNCHING LOGOS CLUSTER')
     in_dir = 'inputs'
     metadata_file = 'metadata.txt'
     input_file = 'input.csv'
@@ -39,9 +44,21 @@ def main():
     # cluster.auto_insert()
     # print(f'Populate cluster: {time.perf_counter() - step_start:.2f} seconds')
 
-    # Step 2: Launch SumDB (VectorDB) with IndexTable
+    # Step 2: Launch SumDB
+    print('[Step 2] LAUNCHING SUMDB')
+    step_start = time.perf_counter()
+    sumdb = SumDB()
+    print(f'Launch SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     # Step 3: Summarize all content from the cluster to SumDB with Summarizer
+    print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
+    step_start = time.perf_counter()
+    result = sumdb.summarize_cluster(cluster)
+    print(f'Summarize cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+    
+    if not result:
+        print('Unexpected error occurred during summarization, terminating...')
+        return
 
     # Step 4: Smart Query, allow user search for similar content, first look up in SumDB, then in LogosCluster    
 

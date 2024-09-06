@@ -2,8 +2,10 @@ import polars as pl
 import os
 import time
 
-# This file preprocesses data to ready for import into TopicCluster
-# It will takes user's csv, then generates 2 files: input.csv and topics.txt
+'''
+This file preprocesses data before import into TopicCluster
+It will takes user's csv, then generates 2 files: input.csv and topics.txt
+'''
 
 input_dir = "inputs/"
 input_file = "classified_wiki.csv"

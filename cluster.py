@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import Iterator, List, Tuple, Union
 from datetime import datetime
 import os
 import sqlite3
@@ -148,7 +148,7 @@ class LogosCluster:
 
     def query(self, _id: int, node: str) -> Union[Tuple[int, str, datetime], None]:
         '''
-        Query data from a specific node,
+        Query specific data using ID from a specific node
         Input: node name and ID
         Output: Row schema (ID: int, Content: str, UpdatedAt: datetime)
         '''
@@ -162,4 +162,48 @@ class LogosCluster:
 
         except Exception as e:
             print(f'Error at LogosCluster query: {e}')
+            return None
+
+    def query_all(self, node: str) -> List[Tuple[int, str, datetime]]:
+        '''
+        [WARNING] This function is not recommended for large dataset as leading to memory issues
+
+        Query all data from a specific node
+        Input: node name
+        Output: List of rows (ID: int, Content: str, UpdatedAt: datetime)
+        '''
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(f'SELECT * FROM {self.table_name}')
+                result = cursor.fetchall()
+            return result
+
+        except Exception as e:
+            print(f'Error at LogosCluster query_all: {e}')
+            return []
+
+    def query_chunk(self, node: str, CHUNK_SIZE: int=1000) -> Iterator[List[Tuple[int, str, datetime]]]:
+        '''
+        Query all data from a specific node in chunks
+        Input: node name
+        Output: List of rows (ID: int, Content: str, UpdatedAt: datetime)
+
+        Example usage: 
+        for chunk in cluster.query_chunk(node):
+            for row in chunk:
+                print(row)   
+        '''
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(f'SELECT * FROM {self.table_name}')
+                while True:
+                    rows = cursor.fetchmany(CHUNK_SIZE)
+                    if not rows:
+                        break
+                    yield rows
+    
+        except Exception as e:
+            print(f'Error at LogosCluster query_chunk: {e}')
             return None
