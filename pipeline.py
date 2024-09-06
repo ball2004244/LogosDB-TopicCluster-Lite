@@ -53,9 +53,9 @@ def main():
     # Step 3: Summarize all content from the cluster to SumDB with Summarizer
     print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
     step_start = time.perf_counter()
-    result = sumdb.summarize_cluster(cluster)
+    result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=64)
     print(f'Summarize cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
-    
+
     if not result:
         print('Unexpected error occurred during summarization, terminating...')
         return
