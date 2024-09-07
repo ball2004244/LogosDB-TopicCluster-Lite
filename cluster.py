@@ -163,6 +163,18 @@ class LogosCluster:
         except Exception as e:
             print(f'Error at LogosCluster query: {e}')
             return None
+        
+    def query_by_ids(self, row_ids: List[int], node: str) -> List[Tuple[int, str, datetime]]:
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    f'SELECT * FROM {self.table_name} WHERE ID IN ({",".join([str(_id) for _id in row_ids])})')
+                result = cursor.fetchall()
+            return result
+        except Exception as e:
+            print(f'Error at LogosCluster query_by_ids: {e}')
+            return []
 
     def query_all(self, node: str) -> List[Tuple[int, str, datetime]]:
         '''

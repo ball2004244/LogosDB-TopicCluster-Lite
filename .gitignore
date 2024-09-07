@@ -163,4 +163,6 @@ cython_debug/
 
 cluster_data/
 inputs/
-metadata.txt
+notes/
+*.txt
+*.json
