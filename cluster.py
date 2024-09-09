@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import Iterator, List, Tuple, Union
 from datetime import datetime
 import os
 import sqlite3
@@ -6,6 +6,9 @@ import time
 import multiprocessing as mp
 import pandas as pd
 
+'''
+This file contains the LogosCluster class, which is responsible for building a distributed system of SQLite databases.
+'''
 
 class LogosCluster:
     def __init__(self) -> None:
@@ -74,6 +77,22 @@ class LogosCluster:
             print(f'Error at LogosCluster insert: {e}')
             return False
 
+    def insert_batch(self, data: List[Tuple[str, str]], node: str) -> bool:
+        '''
+        Insert data into 1 node in batch
+        '''
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.executemany(
+                    f'INSERT INTO {self.table_name} (Content, UpdatedAt) VALUES (?, ?)', data)
+                conn.commit()
+            return True
+
+        except Exception as e:
+            print(f'Error at LogosCluster insert_batch: {e}')
+            return False
+
     def process_group(self, topic: str, data: pd.DataFrame) -> None:
         '''
         Process each group of data in parallel
@@ -85,7 +104,7 @@ class LogosCluster:
             data_tuples = list(
                 data[['content', 'UpdatedAt']].itertuples(index=False, name=None))
 
-            self.insert(data_tuples, topic)
+            self.insert_batch(data_tuples, topic)
         except Exception as e:
             print(f'Error at LogosCluster process_group: {e}')
 
@@ -129,7 +148,7 @@ class LogosCluster:
 
     def query(self, _id: int, node: str) -> Union[Tuple[int, str, datetime], None]:
         '''
-        Query data from a specific node,
+        Query specific data using ID from a specific node
         Input: node name and ID
         Output: Row schema (ID: int, Content: str, UpdatedAt: datetime)
         '''
@@ -143,4 +162,60 @@ class LogosCluster:
 
         except Exception as e:
             print(f'Error at LogosCluster query: {e}')
+            return None
+        
+    def query_by_ids(self, row_ids: List[int], node: str) -> List[Tuple[int, str, datetime]]:
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    f'SELECT * FROM {self.table_name} WHERE ID IN ({",".join([str(_id) for _id in row_ids])})')
+                result = cursor.fetchall()
+            return result
+        except Exception as e:
+            print(f'Error at LogosCluster query_by_ids: {e}')
+            return []
+
+    def query_all(self, node: str) -> List[Tuple[int, str, datetime]]:
+        '''
+        [WARNING] This function is not recommended for large dataset as leading to memory issues
+
+        Query all data from a specific node
+        Input: node name
+        Output: List of rows (ID: int, Content: str, UpdatedAt: datetime)
+        '''
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(f'SELECT * FROM {self.table_name}')
+                result = cursor.fetchall()
+            return result
+
+        except Exception as e:
+            print(f'Error at LogosCluster query_all: {e}')
+            return []
+
+    def query_chunk(self, node: str, CHUNK_SIZE: int=1000) -> Iterator[List[Tuple[int, str, datetime]]]:
+        '''
+        Query all data from a specific node in chunks
+        Input: node name
+        Output: List of rows (ID: int, Content: str, UpdatedAt: datetime)
+
+        Example usage: 
+        for chunk in cluster.query_chunk(node):
+            for row in chunk:
+                print(row)   
+        '''
+        try:
+            with sqlite3.connect(f'{self.data_dir}/{node}.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(f'SELECT * FROM {self.table_name}')
+                while True:
+                    rows = cursor.fetchmany(CHUNK_SIZE)
+                    if not rows:
+                        break
+                    yield rows
+    
+        except Exception as e:
+            print(f'Error at LogosCluster query_chunk: {e}')
             return None
