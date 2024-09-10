@@ -57,11 +57,11 @@ def main():
     # print(f'Summarize cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     #! INSTEAD OF SUMMARIZING THE WHOLE CLUSTER, WE CAN SUMMARIZE A SINGLE NODE
-    node_name = 'Astronomy'
+    node_name = 'Chemistry'
     CHUNK_SIZE = 128
     print(f'[Step 3] SUMMARIZING NODE {node_name} TO SUMDB, CHUNK SIZE: {CHUNK_SIZE}')
     step_start = time.perf_counter()
-    result = sumdb.summarize_node(node_name, cluster, CHUNK_SIZE=128)
+    result = sumdb.summarize_node(node_name, cluster, CHUNK_SIZE=CHUNK_SIZE)
     print(f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     if not result:

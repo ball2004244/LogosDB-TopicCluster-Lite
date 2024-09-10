@@ -7,4 +7,4 @@
 docker run -d --name marqo-vectdb -p 8882:8882 marqoai/marqo:latest
 
 # Run Marqo GPU
-# docker run --name marqo-gpu-vectdb --gpus all -p 8882:8882 marqoai/marqo:latest
+# docker run -d --name marqo-gpu-vectdb --gpus all -p 8882:8882 marqoai/marqo:latest

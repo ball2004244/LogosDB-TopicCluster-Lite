@@ -64,7 +64,7 @@ def smart_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: i
         return []
     
 if __name__ == '__main__':
-    query = 'What is quantum gravity and its role in modern astronomy?'    
+    query = 'What is the solar system?'    
     sumdb = SumDB()
     cluster = LogosCluster()
     out_dir = 'outputs'
