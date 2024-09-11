@@ -163,6 +163,7 @@ cython_debug/
 
 cluster_data/
 inputs/
+results/
 notes/
 *.txt
 *.json
