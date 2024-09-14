@@ -11,7 +11,8 @@ This file will compared generated answers from SLM with given answers in the dat
 def measure_raw(df: pd.DataFrame) -> None:
     print('Starting measuring on raw SLM...')
     res_dir = 'results'
-    res_file = 'llama_raw.txt'
+    res_file = 'llama_raw.txt' # For raw SLM
+    # res_file = 'llama_logos_tailored.txt' # For SLM + LogosDB
     res_path = os.path.join(res_dir, res_file)
     with open(res_path, 'r') as f:
         # Skip the first row (topic)
@@ -20,9 +21,9 @@ def measure_raw(df: pd.DataFrame) -> None:
     correct = 0
     wrong = 0
     for i, row in df.iterrows():
-        print(f'Processing row {i}/{len(df)}...')
+        print(f'Processing row {i+1}/{len(df)}...')
         # also take only the first character
-        raw_answer = res[i-1].strip()[0].upper()
+        raw_answer = res[i].strip()[0].upper()
         answer = row['answer']
 
         if raw_answer not in ANSWER_MAP:

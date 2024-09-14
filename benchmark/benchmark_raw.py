@@ -5,6 +5,7 @@ from constants import SUBJECT, PROMPT, SUFFIX_PROMPT, OLLAMA_MODEL
 from ollama import raw_call
 from datasets import load_dataset
 import pandas as pd
+import string
 
 '''
 This file is for benchmarking pure LLama 3.1 8B logical thinking on MMLU dataset.
@@ -33,6 +34,11 @@ def benchmark_raw(df: pd.DataFrame) -> None:
         print(f'Processing row {i}/{len(df)}...')
         question = row['question']
         choices = row['choices']
+	
+	# Generate labels dynamically based on the length of lst
+        labels = list(string.ascii_uppercase[:len(choices)])
+        formatted_list = [f"{label}. {item}" for label, item in zip(labels, choices)]
+        choices = "; ".join(formatted_list)
 
         prompt = PROMPT % (SUBJECT)
         end_suffix_prompt = SUFFIX_PROMPT % (question, choices)
@@ -59,6 +65,7 @@ if __name__ == '__main__':
 
     # convert the dataset to a pandas dataframe
     df = pd.DataFrame(ds['test'])
+    print(f'Topic: {df["subject"][0]}')
     print(f'Length of test set: {len(df)}')
     print(f'Top 5 rows:\n{df.head()}')
 

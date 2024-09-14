@@ -75,7 +75,7 @@ if __name__ == '__main__':
     query = 'What is blackhole?'
     sumdb = SumDB()
     cluster = LogosCluster()
-    out_dir = 'outputs'
+    out_dir = 'debug'
 
     # Perform smart query
     results = smart_query(cluster, sumdb, query)
