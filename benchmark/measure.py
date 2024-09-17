@@ -12,7 +12,8 @@ def measure_raw(df: pd.DataFrame) -> None:
     print('Starting measuring on raw SLM...')
     res_dir = 'results'
     res_file = 'llama_raw.txt' # For raw SLM
-    # res_file = 'llama_logos_tailored.txt' # For SLM + LogosDB
+    #res_file = 'llama_logos.txt' # For SLM + LogosDB
+
     res_path = os.path.join(res_dir, res_file)
     with open(res_path, 'r') as f:
         # Skip the first row (topic)
