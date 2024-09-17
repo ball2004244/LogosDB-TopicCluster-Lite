@@ -10,15 +10,16 @@ This file contains the SumDB class, which is responsible for storing summarized 
 
 
 class SumDB:
-    def __init__(self):
-        self.host = 'localhost'
-        self.port = 8882
+    def __init__(self, host: str = 'localhost', port: int = 8882) -> None:
+        self.host = host
+        self.port = port
 
         # set up Marqo connector
         self.db = marqo.Client(url=f'http://{self.host}:{self.port}')
 
         # Only create index if it does not exist
-        index_name = 'one_node_sumdb'
+        # index_name = 'one_node_sumdb' # use for one_node sumdb
+        index_name = 'sumdb'
         try:
             self.db.create_index(index_name, model="hf/e5-base-v2")
         except:
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     # print('Querying all data...')
     # print(sumdb.query_all())
 
-    print('Final cleanup...')
-    sumdb.delete_all()
+    # print('Final cleanup...')
+    # sumdb.delete_all()
 
     print(f'Total time: {time.perf_counter() - start:.2f} seconds')
