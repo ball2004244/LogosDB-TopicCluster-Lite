@@ -10,7 +10,7 @@ This file contains the SumDB class, which is responsible for storing summarized 
 
 
 class SumDB:
-    def __init__(self, host: str = 'localhost', port: int = 8882) -> None:
+    def __init__(self, host: str = 'localhost', port: int = 8882, index_name: str = 'sumdb') -> None:
         self.host = host
         self.port = port
 
@@ -19,7 +19,7 @@ class SumDB:
 
         # Only create index if it does not exist
         # index_name = 'one_node_sumdb' # use for one_node sumdb
-        index_name = 'sumdb'
+        # index_name = 'sumdb'
         try:
             self.db.create_index(index_name, model="hf/e5-base-v2")
         except:
