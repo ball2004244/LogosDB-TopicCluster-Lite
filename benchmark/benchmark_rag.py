@@ -43,7 +43,7 @@ def benchmark_slm_rag(df: pd.DataFrame) -> None:
                           item in zip(labels, choices)]
         choices = "; ".join(formatted_list)
 
-        suffix_rag_prompt = '''Read through the following 3 pieces of information and use them to answer the question. If you think the information pieces given are irrelevant, then you can use your understanding.\n'''
+        suffix_rag_prompt = '''Read through the following 3 pieces of information, retreive and make sure you understand them, then base on that information with your understanding to answer the question. If you think the information pieces given are irrelevant, then you can use only your understanding.\n'''
 
         print(f'Querying RAG with question: {question}')
         print(f'Choices: {choices}')
@@ -52,17 +52,18 @@ def benchmark_slm_rag(df: pd.DataFrame) -> None:
         rag_results = call_rag(query=question, k=3)
 
         # build the prompt for the SLM
-        '''
+        
         for j, doc in enumerate(rag_results):
             suffix_rag_prompt += f'===== START OF INFORMATION {j+1} =====\n'
             suffix_rag_prompt += f'{doc}\n'
             suffix_rag_prompt += f'===== END OF INFORMATION {j+1} =====\n\n'
-        '''
-        for h, doc in enumerate(rag_results):
-            suffix_rag_prompt += f'Information {h+1}: {doc}.\n'
-        suffix_rag_prompt += '''
-        \nProvide only the letter (A, B, C, D, or E) that corresponds to the correct answer. Do not provide any explanation or reasoning.\n
-        Example answer: A'''
+        
+        # for h, doc in enumerate(rag_results):
+            # suffix_rag_prompt += f'Information {h+1}: {doc}.\n'
+        
+        #suffix_rag_prompt += '''\nProvide only the letter (A, B, C, D, or E) that corresponds to the correct answer. Do not provide any explanation or reasoning.\nExample answer: A'''
+        suffix_rag_prompt += '''Yout MUST answer using this pattern:\nQuestion Analyze:{Your analyse}\nReasoning: {Your reasoning and explanation of your answer}\nFinal Choice:\n\nExample answer:\nQuestion Analyze: This question is asking about the name of the 7th planet from the Sun.\nReasoning: Base on my understanding, it should be Uranus.\nFinal Choice: D. Uranus\n\nRemember that in your final choice, you should only include your choice from the choices given, no explanation (because that is what you have done in the "Reasoning" part). Also, you can only choose one choice from the choices given.'''
+
         # suffix_rag_prompt += 'End of documents.\n'
 
         end_suffix_prompt = SUFFIX_PROMPT % (question, choices)
@@ -79,12 +80,11 @@ def benchmark_slm_rag(df: pd.DataFrame) -> None:
 
         res = raw_call(final_prompt, model=OLLAMA_MODEL)
         with open(res_path, 'a') as f:
-            # f.write(f'Question {i+1}: ')
-            f.write(f'{res}\n')
-            # f.write('--------------------------\n')
-            # f.write(f'Question: {question}\n')
-            # f.write(f'Choices: {choices}\n')
-            # f.write(f'Answer: {res}\n')
+            f.write(f'Question {i+1}: \n')
+            f.write(f'Question: {question}\n')
+            f.write(f'Choices: {choices}\n')
+            f.write(f'Answer: {res}\n')
+            f.write('---------------------------------------\n')
     print(f'Benchmarking done in {time.perf_counter() - start} seconds.')
 
 

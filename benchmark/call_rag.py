@@ -9,6 +9,7 @@ from typing import List
 from cluster import LogosCluster
 from sumdb import SumDB
 from smart_query import smart_query
+from improved_query import improved_query
 
 def call_rag(query: str, k: int=5) -> List[str]:
     '''

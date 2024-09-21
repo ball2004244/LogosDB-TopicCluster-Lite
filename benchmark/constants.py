@@ -11,9 +11,7 @@ Example answer: A
 RAG_PROMPT = '''
 You are an PhD expert in %s.
 Answer this multiple-choice question below with accuracy. Carefully analyze the question and select the correct option. If unsure, choose the most likely answer based on your understanding.
-Provide only the letter corresponding to the correct answer, and only one option could be chosen. Do not provide any explanation or notes.
 
-Example answer: A
 '''
 
 SUFFIX_PROMPT = '''
@@ -25,7 +23,7 @@ Options:
 '''
 
 
-SUBJECT = 'professional_psychology' #! CHANGE TO THE SUBJECT YOU WANT TO MEASURE
+SUBJECT = 'high_school_microeconomics' #! CHANGE TO THE SUBJECT YOU WANT TO MEASURE
 ANSWER_MAP = {
     'A': 0,
     'B': 1,
