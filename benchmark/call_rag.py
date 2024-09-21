@@ -10,6 +10,7 @@ from cluster import LogosCluster
 from sumdb import SumDB
 from smart_query import smart_query
 from improved_query import improved_query
+from auxi_query import auxi_query
 
 def call_rag(query: str, k: int=5) -> List[str]:
     '''
@@ -20,6 +21,21 @@ def call_rag(query: str, k: int=5) -> List[str]:
     
     results = smart_query(cluster, sumdb, query, k)
     
+    # concatenate the results
+    output = []
+    for res in results:
+        output.append(res['Summary'])
+
+    return output
+
+def call_auxi_train(query: str, k: int=5) -> List[str]:
+    '''
+    Helper function to call SumDB as auxiliary training data.
+    '''
+    sumdb = SumDB()
+    
+    results = auxi_query(sumdb, query, k)
+
     # concatenate the results
     output = []
     for res in results:

@@ -44,7 +44,8 @@ def measure_raw(df: pd.DataFrame) -> None:
 def measure_rag(df: pd.DataFrame) -> None:
     print('Starting measuring on RAG SLM...')
     res_dir = 'results'
-    res_file = 'llama_logos.txt'
+    # res_file = 'llama_logos.txt'
+    res_file = 'llama_auxi.txt' # For Auxi Train RAG
 
     res_path = os.path.join(res_dir, res_file)
     topic_row = ''
