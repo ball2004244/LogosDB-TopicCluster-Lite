@@ -40,7 +40,7 @@ if __name__ == '__main__':
     print(f'Preprocessed {len(data)} rows')
 
     print(f'Inserting data into the VectorDB...')
-    sumdb = SumDB()
+    sumdb = SumDB('localhost', 8884)
     sumdb.insert(data)
 
     print(f'Inserted {len(data)} rows into the VectorDB for topic {SUBJECT}')
