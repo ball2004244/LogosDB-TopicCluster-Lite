@@ -11,8 +11,8 @@ Part 1: Original Smart Query
 
 Part 2: Extended Smart Query
 5. Split each document by paragraph
-6. Pass each paragraph as vector to temp SumDB
-7. Do similarity search on temp SumDB and get top-k results
+6. Pass each paragraph as vector to paraDB
+7. Do similarity search on paraDB and get top-k results
 8. Return the final results to the user
 '''
 
@@ -23,18 +23,20 @@ from sumdb import SumDB
 import json
 
 
-def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: int = 5) -> List[Dict[str, str]]:
+def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: int = 5, verbose: bool=False) -> List[Dict[str, str]]:
     '''
     Perform an original smart query by querying SumDB first, then use the results to query LogosCluster
 
-    Utilizing temp SumDB to search for more relevant and concise information
+    Utilizing paraDB to search for more relevant and concise information
     '''
     try:
         # Step 1: Query SumDB
-        print(f'Querying SumDB with query: {query_vector}')
+        if verbose:
+            print(f'Querying SumDB with query: {query_vector}')
         sumdb_results = sumdb.query(query_vector, top_k)
 
-        print(f'Extracted {len(sumdb_results)} results from SumDB')
+        if verbose:
+            print(f'Extracted {len(sumdb_results)} results from SumDB')
 
         # Step 2: Extract the top-k results from SumDB
         topic_map = defaultdict(list)
@@ -49,14 +51,14 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
             score_map[row_id] = score
             summary_map[row_id] = summary
 
-        # print(f'Extracted info: {topic_map}')
-
         # Step 3: Use the extracted results to query LogosCluster
-        print('Querying LogosCluster by each topic node')
+        if verbose:
+            print('Querying LogosCluster by each topic node')
         cluster_results = []
         count = 0
         for topic, row_ids in topic_map.items():
-            print(f'Node {count}: {topic}, row_ids: {row_ids}')
+            if verbose:
+                print(f'Node {count}: {topic}, row_ids: {row_ids}')
             results = cluster.query_by_ids(row_ids, topic)
 
             # match the score with result
@@ -78,20 +80,24 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
         cluster_results = sorted(
             cluster_results, key=lambda x: x['Score'], reverse=True)
 
-        print(f'Extracted {len(cluster_results)} results from LogosCluster')
+        if verbose:
+            print(f'Extracted {len(cluster_results)} results from LogosCluster')
 
         #* Extended Smart Query
-        print(f'START EXTENDED SMART QUERY')
+        if verbose:
+            print(f'START EXTENDED SMART QUERY')
         # Step 5: Split each document by paragraph
-        # Set up temp SumDB
-        temp_sumdb = SumDB('localhost', 8883)
+        # Set up paraDB (Split docs into paragraphs)
+        paraDB = SumDB('localhost', 8883)
 
-        # clear temp SumDB
-        print(f'Clean up temp SumDB for new data...')
-        temp_sumdb.delete_all()
+        # clear paraDB to prepare for new data
+        if verbose:
+            print(f'Clean up paraDB for new data...')
+        paraDB.delete_all()
 
         # split each document by paragraph
-        print(f'Splitting each document by paragraph...')
+        if verbose:
+            print(f'Splitting each document by paragraph...')
         WORD_PER_PARAGRAPH = 150 #! Change this to the number of words per paragraph
         para_vectors = []
         para_id = 0
@@ -110,20 +116,33 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
                 })
                 para_id += 1
 
-        print(f'Extracted {len(para_vectors)} paragraphs from LogosCluster')
+        if verbose:
+            print(f'Extracted {len(para_vectors)} paragraphs from LogosCluster')
         
-        # Step 6: Pass each paragraph vector to temp SumDB
-        temp_log = temp_sumdb.insert(para_vectors)
+        # Step 6: Pass each paragraph vector to paraDB
+        paraDB.insert(para_vectors)
 
-        temp_docs = temp_sumdb.query_all(top_k=len(para_vectors) + 1)
-        print(f'Inserted {len(temp_docs)} paragraphs to temp SumDB')
+        docs = paraDB.query_all(top_k=len(para_vectors) + 1)
+        if verbose:
+            print(f'Inserted {len(docs)} paragraphs to paraDB')
 
-        # Step 7: Do similarity search on temp SumDB and get top-k results
-        relevant_paras = temp_sumdb.query(query_vector, top_k)
+        # Step 7: Do similarity search on paraDB and get top-k paragraphs
+        relevant_paras = paraDB.query(query_vector, top_k)
 
-        # Step 8: Return the final results to the user
-        print(f'Extended smart query done. Extracted {len(relevant_paras)} relevant paragraphs')
-        return relevant_paras
+        if verbose:
+            print(f'Extended smart query done. Extracted {len(relevant_paras)} relevant paragraphs')
+
+        # Step 8: Reformat and Return the final results to the user
+
+        formatted_results = []
+        for res in relevant_paras:
+            formatted_results.append({
+                'ID': res['para_id'],
+                'Summary': res['summary'],
+                'Topic': res['topic'],
+                'Score': res['_score']
+            })
+        return formatted_results
 
     except Exception as e:
         print(f'Error at smart_query: {e}')
@@ -146,6 +165,4 @@ if __name__ == '__main__':
 
     print(f'Smart query done in {time.perf_counter() - start} seconds.')
 
-    for i, res in enumerate(results):
-        summary = res['summary']
-        print(f'Para {i+1}, len: {len(summary)}, {summary[:100]}...')
+    print(f'Check out return log at {out_dir}/improved_query_results.json')

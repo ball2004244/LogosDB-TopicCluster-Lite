@@ -89,7 +89,7 @@ class SumDB:
                 id_set = []
                 for hit in all_docs['hits']:
                     id_set.append(hit['_id'])
-                print(f'Deleting {len(id_set)} documents')
+
                 self.index.delete_documents(id_set)
 
                 all_docs = self.index.search(q='', limit=128)

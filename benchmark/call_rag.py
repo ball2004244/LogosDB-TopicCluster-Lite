@@ -12,15 +12,19 @@ from smart_query import smart_query
 from improved_query import improved_query
 from auxi_query import auxi_query
 
-def call_rag(query: str, k: int=5) -> List[str]:
+def call_rag(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
     '''
     Helper function to call LogosDB as RAG model.
     '''
     cluster = LogosCluster()
     sumdb = SumDB()
-    
-    results = smart_query(cluster, sumdb, query, k)
-    
+
+    #! Switch between smart_query and improved_query for different scenarios
+    if not use_improved_query:
+        results = smart_query(cluster, sumdb, query, k)
+    else:
+        results = improved_query(cluster, sumdb, query, k)
+
     # concatenate the results
     output = []
     for res in results:
@@ -33,12 +37,15 @@ def call_auxi_train(query: str, k: int=5) -> List[str]:
     Helper function to call SumDB as auxiliary training data.
     '''
     sumdb = SumDB('localhost', 8884)
-    
+
     results = auxi_query(sumdb, query, k)
 
     # concatenate the results
     output = []
     for res in results:
+        # remove result with score < 0.7
+        if res['Score'] < 0.7:
+            continue
         output.append(res['Summary'])
 
     return output
@@ -55,21 +62,25 @@ def call_multi_rag(query: str, k: int=5) -> List[str]:
     # remove duplicate
     auxi_results = list(set(auxi_results))
 
-    logos_results = call_rag(query, k)
+    #! NOTE: improved query goes with call_rag so no need to explicitly code here
+    logos_results = call_rag(query, k, use_improved_query=True)
 
     # remove duplicate
     logos_results = list(set(logos_results))
 
-    # pass relevant info through ParaDB
-    # TODO: Implement ParaDB
-    pass
-
     return logos_results
 
 if __name__ == '__main__':
-    query = "What is the capital of France?"
+    import json
+    query = "What is a black hole?"
     # res = call_rag(query)
     # print(res)
 
-    res = call_auxi_train(query)
-    print(res)
+    # res = call_auxi_train(query)
+    
+    res = call_multi_rag(query)
+    debug_dir = 'debug'
+    
+    with open(f'{debug_dir}/call_rag_py.json', 'w') as f:
+        json.dump(res, f)
+    print(f'Finished writing to {debug_dir}/call_rag_py.json')

@@ -1,5 +1,5 @@
 from datasets import load_dataset
-from call_rag import call_rag
+from call_rag import call_multi_rag
 from ollama import raw_call
 from constants import OLLAMA_MODEL, RAG_PROMPT, SUFFIX_PROMPT, SUBJECT
 import pandas as pd
@@ -22,7 +22,7 @@ ParaDB: Splitted docs from WikiSum
 '''
 
 def benchmark_multi_rag(df: pd.DataFrame) -> None:
-    print('Starting benchmarking on SLM + Logos RAG...')
+    print('Starting benchmarking on SLM + Multi RAG...')
     start = time.perf_counter()
     res_dir = 'results'
     res_file = 'llama_multi_rag.txt'
@@ -52,7 +52,7 @@ def benchmark_multi_rag(df: pd.DataFrame) -> None:
         print(f'Choices: {choices}')
         rag_prompt = RAG_PROMPT % (SUBJECT)
         # get top 3 results from RAG
-        rag_results = call_rag(query=question, k=3)
+        rag_results = call_multi_rag(query=question, k=3)
 
         # build the prompt for the SLM
         
