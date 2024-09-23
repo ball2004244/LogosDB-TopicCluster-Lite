@@ -45,7 +45,8 @@ def measure_rag(df: pd.DataFrame) -> None:
     print('Starting measuring on RAG SLM...')
     res_dir = 'results'
     # res_file = 'llama_logos.txt'
-    res_file = 'llama_auxi.txt' # For Auxi Train RAG
+    # res_file = 'llama_auxi.txt' # For Auxi Train RAG
+    res_file = 'llama_multi_rag.txt' # For Multi RAG
 
     res_path = os.path.join(res_dir, res_file)
     topic_row = ''
@@ -55,14 +56,24 @@ def measure_rag(df: pd.DataFrame) -> None:
         topic_row = f.readline()
         # Each res is actually a para until meeting delimiter: '---------------------------------------'
         raw_file = f.read()
+        
+        # first split by '---------------------------------------' and drop the last empty string
+        splitted_file = raw_file.split('---------------------------------------')[:-1]
 
-        # Split by 'Final Choice'
-        splitted_file = raw_file.split('Final Choice:')[1:]
         answer = 'F' # default to F
-        for raw_ans in splitted_file:
+        for ans in splitted_file:
+            # check if final choice present, if not append 'F'
+
+            if 'Final Choice:' not in ans:
+                res.append(answer)
+                continue
+
+            # Split by 'Final Choice' and take the second part
+            splitted_ans = ans.split('Final Choice:')[1]
+
             # take only the first character of each answer
-            answer = raw_ans.strip()[0].upper()
-            res.append(answer)
+            final_answer = splitted_ans.strip()[0].upper()
+            res.append(final_answer)
 
     debug_dir = 'debug'
     debug_file = f'{res_file.split(".")[0]}_measure_debug.txt'
@@ -76,6 +87,14 @@ def measure_rag(df: pd.DataFrame) -> None:
     wrong = 0
     for i, row in df.iterrows():
         print(f'Processing row {i+1}/{len(df)}...')
+
+        # check out of bound the mark as wrong
+        if i >= len(res):
+            print('Out of bound detected!')
+            print('Maybe SLM answer not generated properly...')
+            wrong += 1
+            continue
+
         # also take only the first character
         raw_answer = res[i].strip()[0].upper()
         answer = row['answer']
