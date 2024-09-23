@@ -15,11 +15,26 @@ def main():
     # input_file = 'inp-10k.csv'  # ! Test on smaller dataset
     # input_file = 'inp-100k.csv'
     
+    # config logos cluster
+    # logos_dir = 'cluster_data' #! Default cluster data directory
+    logos_dir = 'auxi_logos_extract'
+
+    # config sumdb
+    sum_db_host = 'localhost'
+    # sum_db_port = 8882 #! Default port for SumDB
+    sum_db_port = 8885
+    
+    print(f'Loading Config:')
+    print(f'Input dataset: {in_dir}/{input_file}')
+    print(f'Metadata file: {in_dir}/{metadata_file}')
+    print(f'Logos cluster save dir: {logos_dir}')
+    print(f'SumDB address: {sum_db_host}:{sum_db_port}')
+
     print('Start processing...')
     start = time.perf_counter()
     
     # First build the cluster
-    cluster = LogosCluster()
+    cluster = LogosCluster(data_dir=logos_dir)
 
     # Set metadata
     step_start = time.perf_counter()
@@ -47,28 +62,29 @@ def main():
     # Step 2: Launch SumDB
     print('[Step 2] LAUNCHING SUMDB')
     step_start = time.perf_counter()
-    sumdb = SumDB()
+    sumdb = SumDB(host=sum_db_host, port=sum_db_port)
     print(f'Launch SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     # Step 3: Summarize all content from the cluster to SumDB with Summarizer
-    # print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
-    # step_start = time.perf_counter()
-    # result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=64)
-    # print(f'Summarize cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+    CHUNK_SIZE = 128
+    print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
+    step_start = time.perf_counter()
+    result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=CHUNK_SIZE)
+    print(f'Summarize all cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     #! INSTEAD OF SUMMARIZING THE WHOLE CLUSTER, WE CAN SUMMARIZE A SINGLE NODE
-    node_name = 'Economics'
-    CHUNK_SIZE = 128
-    print(f'[Step 3] SUMMARIZING NODE {node_name} TO SUMDB, CHUNK SIZE: {CHUNK_SIZE}')
-    step_start = time.perf_counter()
-    result = sumdb.summarize_node(node_name, cluster, CHUNK_SIZE=CHUNK_SIZE)
-    print(f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+    # node_name = 'Economics'
+    # print(f'[Step 3] SUMMARIZING NODE {node_name} TO SUMDB, CHUNK SIZE: {CHUNK_SIZE}')
+    # step_start = time.perf_counter()
+    # result = sumdb.summarize_node(node_name, cluster, CHUNK_SIZE=CHUNK_SIZE)
+    # print(f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
-    if not result:
-        print('Unexpected error occurred during summarization, terminating...')
-        return
+    # if not result:
+    #     print('Unexpected error occurred during summarization, terminating...')
+    #     return
 
-    # Step 4: Smart Query, allow user search for similar content, first look up in SumDB, then in LogosCluster    
+    # Step 4: Smart Query, allow user search for similar content, first look up in SumDB, then in LogosCluster
+    #! Check out smart_query.py & improved_query.py
 
     print(f'Total time: {time.perf_counter() - start:.2f} seconds to process')
     

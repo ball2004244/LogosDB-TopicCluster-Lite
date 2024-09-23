@@ -118,5 +118,5 @@ def measure_rag(df: pd.DataFrame) -> None:
 if __name__ == '__main__':
     ds = load_dataset("cais/mmlu", SUBJECT)
     df = pd.DataFrame(ds['test'])
-    # measure_raw(df)
-    measure_rag(df)
+    measure_raw(df)
+    # measure_rag(df)
