@@ -34,7 +34,7 @@ if __name__ == '__main__':
     SUBJECT = 'auxiliary_train'
     ds = load_dataset("cais/mmlu", SUBJECT, split='train')
     print(f'Loaded {len(ds)} rows from dataset')
-    
+
     print(f'Preprocessing data...')
     data = preprocess_data(ds)
     print(f'Preprocessed {len(data)} rows')

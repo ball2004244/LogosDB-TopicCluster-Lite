@@ -42,14 +42,7 @@ class SumDB:
         try:
             for i in range(0, len(vectors), CHUNK_SIZE):
                 batch = vectors[i:i + CHUNK_SIZE]
-                temp_output = self.index.add_documents(batch, tensor_fields=['summary'])
-
-                print(f'Insert log: {temp_output}')
-
-                # Test insert first 5 chunk
-                #  = 5 * 128 = 640 rows
-                if i > 5 * CHUNK_SIZE:
-                    break
+                self.index.add_documents(batch, tensor_fields=['summary'])
 
             return True
 
@@ -98,7 +91,7 @@ class SumDB:
                     id_set.append(hit['_id'])
                 print(f'Deleting {len(id_set)} documents')
                 self.index.delete_documents(id_set)
-                
+
                 all_docs = self.index.search(q='', limit=128)
 
             return True
@@ -204,7 +197,7 @@ if __name__ == '__main__':
     # print('Querying data...')
     # queried_res = sumdb.query(query)
     # with open("debug/sumdb_queried_res2.json", "a") as f:
-        # json.dump(queried_res, f)
+    # json.dump(queried_res, f)
     # print(sumdb.query(query))
 
     # print('Querying all data...')

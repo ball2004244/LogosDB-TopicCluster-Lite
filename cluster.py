@@ -11,9 +11,9 @@ This file contains the LogosCluster class, which is responsible for building a d
 '''
 
 class LogosCluster:
-    def __init__(self) -> None:
+    def __init__(self, data_dir: str='cluster_data') -> None:
         self.nodes = []
-        self.data_dir = 'cluster_data'
+        self.data_dir = data_dir
         self.table_name = 'test_table'  # assume that the table in each node is the same
 
         self.input_file = None
