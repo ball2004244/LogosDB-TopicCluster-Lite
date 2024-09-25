@@ -23,7 +23,7 @@ Options:
 '''
 
 
-SUBJECT = 'college_mathematics' #! CHANGE TO THE SUBJECT YOU WANT TO MEASURE
+SUBJECT = 'college_physics' #! CHANGE TO THE SUBJECT YOU WANT TO MEASURE
 ANSWER_MAP = {
     'A': 0,
     'B': 1,

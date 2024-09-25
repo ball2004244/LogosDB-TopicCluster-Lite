@@ -166,5 +166,6 @@ cluster_data/
 inputs/
 results/
 notes/
+figures/
 *.txt
 *.json

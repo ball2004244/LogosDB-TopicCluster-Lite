@@ -8,10 +8,8 @@ This file will compared generated answers from SLM with given answers in the dat
 '''
 
 
-def measure_raw(df: pd.DataFrame) -> None:
+def measure_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_raw.txt') -> None:
     print('Starting measuring on raw SLM...')
-    res_dir = 'results'
-    res_file = 'llama_raw.txt' # For raw SLM
 
     res_path = os.path.join(res_dir, res_file)
     with open(res_path, 'r') as f:
@@ -41,83 +39,31 @@ def measure_raw(df: pd.DataFrame) -> None:
             f'Correct: {correct}, Wrong: {wrong}, Accuracy: {correct/len(df)}')
     print(f'Save result to {stats_path}')
 
-def measure_rag(df: pd.DataFrame) -> None:
-    print('Starting measuring on RAG SLM...')
-    res_dir = 'results'
-    # res_file = 'llama_logos.txt'
-    # res_file = 'llama_auxi.txt' # For AuxiDB + RAG
-    # res_file = 'llama_multi_rag.txt' # For Multi RAG
-    res_file = 'llama_auxi_logos.txt' # For AuxiLogos
+def auto_measure_raw(df: pd.DataFrame) -> bool:
+    try:
+        print(f'STARTING AUTO MEASURE...')
+        res_dir = os.path.join('results', f'raw_multi_calls_{SUBJECT}')
+        res_file = 'llama_raw_%d.txt'
 
-    res_path = os.path.join(res_dir, res_file)
-    topic_row = ''
-    res = []
-    with open(res_path, 'r') as f:
-        # Skip the first row (topic)
-        topic_row = f.readline()
-        # Each res is actually a para until meeting delimiter: '---------------------------------------'
-        raw_file = f.read()
+        # get lenght of that dir
+        num_calls = os.listdir(res_dir)
+
+        valid_num_calls = [f for f in num_calls if '_stats_' not in f]
         
-        # first split by '---------------------------------------' and drop the last empty string
-        splitted_file = raw_file.split('---------------------------------------')[:-1]
+        for i in range(len(valid_num_calls)):
+            print(f'Measuring file {i+1}/{len(valid_num_calls)}...')
+            measure_raw(df, res_dir=res_dir, res_file=(res_file % i))
+            print(f'Finished measuring file {i+1}/{len(valid_num_calls)}...')
 
-        answer = 'F' # default to F
-        for ans in splitted_file:
-            # check if final choice present, if not append 'F'
-
-            if 'Final Choice:' not in ans:
-                res.append(answer)
-                continue
-
-            # Split by 'Final Choice' and take the second part
-            splitted_ans = ans.split('Final Choice:')[1]
-
-            # take only the first character of each answer
-            final_answer = splitted_ans.strip()[0].upper()
-            res.append(final_answer)
-
-    debug_dir = 'debug'
-    debug_file = f'{res_file.split(".")[0]}_measure_debug.txt'
-    debug_path = os.path.join(debug_dir, debug_file)
-    with open(debug_path, 'w') as f:
-        f.write(f'{topic_row}\n')
-        for i, r in enumerate(res):
-            f.write(f'{i+1}. {r}\n')
-
-    correct = 0
-    wrong = 0
-    for i, row in df.iterrows():
-        print(f'Processing row {i+1}/{len(df)}...')
-
-        # check out of bound the mark as wrong
-        if i >= len(res):
-            print('Out of bound detected!')
-            print('Maybe SLM answer not generated properly...')
-            wrong += 1
-            continue
-
-        # also take only the first character
-        raw_answer = res[i].strip()[0].upper()
-        answer = row['answer']
-
-        if raw_answer not in ANSWER_MAP:
-            wrong += 1
-        elif ANSWER_MAP[raw_answer] == answer:
-            correct += 1
-        else:
-            wrong += 1
-
-    # save the result to a file
-    stats_file = f'{res_file.split(".")[0]}_stats.txt'
-    stats_path = os.path.join(res_dir, stats_file)
-    with open(stats_path, 'w') as f:
-        f.write(f'{topic_row}\n')
-        f.write(
-            f'Correct: {correct}, Wrong: {wrong}, Accuracy: {correct/len(df):.3f}')
-    print(f'Save result to {stats_path}')
+        print(f'AUTO MEASURE DONE!')
+        return True
+    except Exception as e:
+        print(f'Error on auto_measure_raw: {e}')
+        return False
 
 if __name__ == '__main__':
     ds = load_dataset("cais/mmlu", SUBJECT)
     df = pd.DataFrame(ds['test'])
-    measure_raw(df)
-    # measure_rag(df)
+    # measure_raw(df)
+    
+    auto_measure_raw(df)
