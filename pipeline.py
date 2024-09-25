@@ -17,12 +17,13 @@ def main():
     
     # config logos cluster
     # logos_dir = 'cluster_data' #! Default cluster data directory
-    logos_dir = 'auxi_logos_extract'
+    logos_dir = 'auxi_logos'
 
     # config sumdb
     sum_db_host = 'localhost'
     # sum_db_port = 8882 #! Default port for SumDB
-    sum_db_port = 8885
+    # sum_db_port = 8885 #! For AuxiLogos Extract
+    sum_db_port = 8886 #! For AuxiLogos Abstract
     
     print(f'Loading Config:')
     print(f'Input dataset: {in_dir}/{input_file}')

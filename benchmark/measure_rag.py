@@ -45,8 +45,9 @@ def measure_rag(df: pd.DataFrame) -> None:
     print('Starting measuring on RAG SLM...')
     res_dir = 'results'
     # res_file = 'llama_logos.txt'
-    # res_file = 'llama_auxi.txt' # For Auxi Train RAG
-    res_file = 'llama_multi_rag.txt' # For Multi RAG
+    # res_file = 'llama_auxi.txt' # For AuxiDB + RAG
+    # res_file = 'llama_multi_rag.txt' # For Multi RAG
+    res_file = 'llama_auxi_logos.txt' # For AuxiLogos
 
     res_path = os.path.join(res_dir, res_file)
     topic_row = ''
@@ -118,5 +119,5 @@ def measure_rag(df: pd.DataFrame) -> None:
 if __name__ == '__main__':
     ds = load_dataset("cais/mmlu", SUBJECT)
     df = pd.DataFrame(ds['test'])
-    measure_raw(df)
-    # measure_rag(df)
+    # measure_raw(df)
+    measure_rag(df)

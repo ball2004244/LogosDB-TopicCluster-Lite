@@ -23,7 +23,7 @@ nodes_name = [
 def test_node(node_name):
     table = 'test_table'
     # cluster_dir = 'cluster_data'
-    cluster_dir = 'auxi_logos_extract'
+    cluster_dir = 'auxi_logos'
     db_path = os.path.join('..', cluster_dir, f'{node_name}.db')
 
     print(f'Getting columns name from {node_name}...')

@@ -23,7 +23,7 @@ Options:
 '''
 
 
-SUBJECT = 'high_school_microeconomics' #! CHANGE TO THE SUBJECT YOU WANT TO MEASURE
+SUBJECT = 'college_mathematics' #! CHANGE TO THE SUBJECT YOU WANT TO MEASURE
 ANSWER_MAP = {
     'A': 0,
     'B': 1,
@@ -31,3 +31,4 @@ ANSWER_MAP = {
     'D': 3,
     'E': 4
 }
+

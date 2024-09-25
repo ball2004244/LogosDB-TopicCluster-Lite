@@ -1,8 +1,8 @@
 from typing import List, Dict
 from extract_sum_mp import mass_extract_summaries
+from abstract_sum import mass_abstract_sum
 from cluster import LogosCluster
 import marqo
-import json
 
 '''
 This file contains the SumDB class, which is responsible for storing summarized vectors and querying similar content.
@@ -131,6 +131,37 @@ class SumDB:
             print(f'Error at SumDB summarize_node: {e}')
             return False
 
+    def summarize_node_abstract(self, node: str, cluster: LogosCluster, CHUNK_SIZE: int = 128) -> bool:
+        '''
+        Summarize content from a single node in the cluster
+        '''
+        try:
+            # Divide data into chunks to avoid memory overload
+            count = 0
+            for chunk in cluster.query_chunk(node, CHUNK_SIZE):
+                insert_data = []
+                print(f'[INFO] Summarizing chunk {count}...')
+                # Each chunk is a list of rows (ID: int, Content: str, UpdatedAt: datetime)
+                # For each chunk, summarize the content
+                summaries = mass_abstract_sum([row[1] for row in chunk])
+
+                # Then modified the chunk with summarized content
+                for summary, row in zip(summaries, chunk):
+                    insert_data.append(
+                        {'row_id': row[0], 'summary': summary, 'topic': node})
+
+                # Finally insert summarized data into SumDB
+                self.insert(insert_data, CHUNK_SIZE)
+
+                print(f'[INFO] Finished summarizing chunk {count}')
+                count += 1
+
+            return True
+
+        except Exception as e:
+            print(f'Error at SumDB summarize_node: {e}')
+            return False
+
     def count_vectors(self) -> int:
         '''
         This function returns the total number of vectors in SumDB
@@ -158,15 +189,20 @@ class SumDB:
 
         return count
 
-    def summarize_cluster(self, cluster: LogosCluster, CHUNK_SIZE: int = 128) -> bool:
+    def summarize_cluster(self, cluster: LogosCluster, CHUNK_SIZE: int = 128, abstract_mode: bool = False) -> bool:
         '''
-        Summarize all content from the cluster to SumDB
+        Summarize all content from the cluster to SumDB 
+        Abstract mode for abstract summarization
+        If set to False, it will use extractive summarization
         '''
         try:
             # Query data from each node and summarize
             for node in cluster.nodes:
                 print(f'[INFO] Processing node {node}')
-                insert_status = self.summarize_node(node, cluster, CHUNK_SIZE)
+                if abstract_mode:
+                    insert_status = self.summarize_node_abstract(node, cluster, CHUNK_SIZE)
+                else:
+                    insert_status = self.summarize_node(node, cluster, CHUNK_SIZE)
 
                 if not insert_status:
                     return False
@@ -184,7 +220,7 @@ if __name__ == '__main__':
     import time
     from rich import print
     start = time.perf_counter()
-    sumdb = SumDB()
+    sumdb = SumDB(port=8886)
     # print('Inserting data...')
     # sumdb.insert(
     #     [
@@ -193,12 +229,12 @@ if __name__ == '__main__':
     #         {'row_id': '3', 'summary': 'This is 2nd testing scenario', 'topic': 'test'},
     #     ]
     # )
-    # query = 'What is the capital of the USA?'
-    # print('Querying data...')
-    # queried_res = sumdb.query(query)
+    query = 'What is the capital of the USA?'
+    print('Querying data...')
+    queried_res = sumdb.query(query)
     # with open("debug/sumdb_queried_res2.json", "a") as f:
     # json.dump(queried_res, f)
-    # print(sumdb.query(query))
+    print(sumdb.query(query))
 
     # print('Querying all data...')
     # print(sumdb.query_all())
