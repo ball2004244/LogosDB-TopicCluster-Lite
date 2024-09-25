@@ -16,7 +16,7 @@ docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ol
 '''
 
 
-def benchmark_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_raw.txt') -> None:
+def benchmark_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_raw.txt', subject: str = SUBJECT) -> None:
     print('Starting benchmarking on raw SLM...')
     start = time.perf_counter()
     res_path = os.path.join(res_dir, res_file)
@@ -39,7 +39,7 @@ def benchmark_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'l
                           item in zip(labels, choices)]
         choices = "; ".join(formatted_list)
 
-        prompt = PROMPT % (SUBJECT)
+        prompt = PROMPT % (subject)
         end_suffix_prompt = SUFFIX_PROMPT % (question, choices)
 
         prompt = f'{prompt}\n{end_suffix_prompt}'
@@ -58,10 +58,10 @@ def benchmark_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'l
     print(f'Benchmarking done in {time.perf_counter() - start} seconds.')
 
 
-def auto_benchmark(df: pd.DataFrame, num_calls: int = 1) -> bool:
+def auto_benchmark(df: pd.DataFrame, subject: str = SUBJECT, num_calls: int = 1) -> bool:
     try:
         print(f'STARTING AUTO BENCHMARK WITH {num_calls} CALLS...')
-        res_dir = f'results/raw_multi_calls_{SUBJECT}'
+        res_dir = f'results/raw_multi_calls_{subject}'
         res_file = 'llama_raw_%d.txt'
         for i in range(num_calls):
             print(f'Auto benchmarking call {i+1}/{num_calls}...')

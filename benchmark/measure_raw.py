@@ -39,10 +39,10 @@ def measure_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'lla
             f'Correct: {correct}, Wrong: {wrong}, Accuracy: {correct/len(df)}')
     print(f'Save result to {stats_path}')
 
-def auto_measure_raw(df: pd.DataFrame) -> bool:
+def auto_measure_raw(df: pd.DataFrame, subject: str = SUBJECT) -> bool:
     try:
         print(f'STARTING AUTO MEASURE...')
-        res_dir = os.path.join('results', f'raw_multi_calls_{SUBJECT}')
+        res_dir = os.path.join('results', f'raw_multi_calls_{subject}')
         res_file = 'llama_raw_%d.txt'
 
         # get lenght of that dir
