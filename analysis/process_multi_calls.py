@@ -1,4 +1,3 @@
-import sys
 import os
 import time
 import pandas as pd
@@ -77,7 +76,7 @@ def main() -> None:
         'college_chemistry',
         'college_medicine'
     ]
-    
+
     print(f'Aggregating stats across {len(subjects)} subjects...')
     start = time.perf_counter()
     for sub in subjects:

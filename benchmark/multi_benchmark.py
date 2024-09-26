@@ -26,7 +26,7 @@ def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw,
         res_file = 'llama_raw_%d.txt'
         for i in range(num_calls):
             print(f'Auto benchmarking call {i+1}/{num_calls}...')
-            benchmark_func(df, res_dir=res_dir, res_file=(res_file % i))
+            benchmark_func(df, res_dir=res_dir, res_file=(res_file % i), subject=subject)
             print(f'Finished benchmarking call {i+1}/{num_calls}...')
 
         print(f'AUTO BENCHMARK DONE!')
@@ -37,12 +37,12 @@ def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw,
         return False
 
 
-def multi_benchmark(subject: List[str], benchmark_func: callable = benchmark_raw, num_calls: int = 100) -> None:
+def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_raw, num_calls: int = 100) -> None:
     '''
     Auto benchmark multiple subjects of MMLU dataset.
     '''
-    for i, sub in enumerate(subject):
-        print(f'Processing subject {i+1}/{len(subject)}: {sub}...')
+    for i, sub in enumerate(subjects):
+        print(f'Processing subject {i+1}/{len(subjects)}: {sub}...')
         ds = load_dataset("cais/mmlu", sub)
         df = pd.DataFrame(ds['test'])
 
@@ -72,15 +72,15 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_raw, subject
         print(f'AUTO MEASURE DONE!')
         return True
     except Exception as e:
-        print(f'Error on auto_measure_raw: {e}')
+        print(f'Error on auto_measure: {e}')
         return False
 
 
-def multi_measure(subject: List[str], measure_func: callable = measure_raw) -> None:
+def multi_measure(subjects: List[str], measure_func: callable = measure_raw) -> None:
     '''
     Auto measure & create a report for multiple subjects of MMLU dataset.
     '''
-    for sub in subject:
+    for sub in subjects:
         ds = load_dataset("cais/mmlu", sub)
         df = pd.DataFrame(ds['test'])
         auto_measure(df, subject=sub, measure_func=measure_func)

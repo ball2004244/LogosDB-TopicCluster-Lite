@@ -17,10 +17,17 @@ def measure_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'lla
         res = f.readlines()
     correct = 0
     wrong = 0
+    res_idx = 0
     for i, row in df.iterrows():
         print(f'Processing row {i+1}/{len(df)}...')
+        
+        while res_idx < len(res) and len(res[res_idx].strip()) > 1:
+            print('Answer longer than 1 character detected!')
+            print('Maybe wrong with SLM format...')
+            res_idx += 1
+
         # also take only the first character
-        raw_answer = res[i].strip()[0].upper()
+        raw_answer = res[res_idx].strip()[0].upper()
         answer = row['answer']
 
         if raw_answer not in ANSWER_MAP:
