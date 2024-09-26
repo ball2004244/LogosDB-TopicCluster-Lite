@@ -8,59 +8,21 @@ This file will compared generated answers from SLM with given answers in the dat
 '''
 
 
-def measure_raw(df: pd.DataFrame) -> None:
-    print('Starting measuring on raw SLM...')
-    res_dir = 'results'
-    res_file = 'llama_raw.txt' # For raw SLM
-
-    res_path = os.path.join(res_dir, res_file)
-    with open(res_path, 'r') as f:
-        topic_row = f.readline()
-        res = f.readlines()
-    correct = 0
-    wrong = 0
-    for i, row in df.iterrows():
-        print(f'Processing row {i+1}/{len(df)}...')
-        # also take only the first character
-        raw_answer = res[i].strip()[0].upper()
-        answer = row['answer']
-
-        if raw_answer not in ANSWER_MAP:
-            wrong += 1
-        elif ANSWER_MAP[raw_answer] == answer:
-            correct += 1
-        else:
-            wrong += 1
-
-    # save the result to a file
-    stats_file = f'{res_file.split(".")[0]}_stats.txt'
-    stats_path = os.path.join(res_dir, stats_file)
-    with open(stats_path, 'w') as f:
-        f.write(f'{topic_row}\n')
-        f.write(
-            f'Correct: {correct}, Wrong: {wrong}, Accuracy: {correct/len(df)}')
-    print(f'Save result to {stats_path}')
-
-def measure_rag(df: pd.DataFrame) -> None:
+def measure_slm_results(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_logos.txt') -> None:
     print('Starting measuring on RAG SLM...')
-    res_dir = 'results'
-    # res_file = 'llama_logos.txt'
-    # res_file = 'llama_auxi.txt' # For Auxi Train RAG
-    res_file = 'llama_multi_rag.txt' # For Multi RAG
-
     res_path = os.path.join(res_dir, res_file)
     topic_row = ''
     res = []
     with open(res_path, 'r') as f:
-        # Skip the first row (topic)
+        # Skip the first row (topic row)
         topic_row = f.readline()
-        # Each res is actually a para until meeting delimiter: '---------------------------------------'
         raw_file = f.read()
-        
-        # first split by '---------------------------------------' and drop the last empty string
-        splitted_file = raw_file.split('---------------------------------------')[:-1]
 
-        answer = 'F' # default to F
+        # first split by '---' and drop the last empty string
+        splitted_file = raw_file.split(
+            '---------------------------------------')[:-1]
+
+        answer = 'F'  # default ans
         for ans in splitted_file:
             # check if final choice present, if not append 'F'
 
@@ -115,8 +77,15 @@ def measure_rag(df: pd.DataFrame) -> None:
             f'Correct: {correct}, Wrong: {wrong}, Accuracy: {correct/len(df):.3f}')
     print(f'Save result to {stats_path}')
 
+
 if __name__ == '__main__':
     ds = load_dataset("cais/mmlu", SUBJECT)
     df = pd.DataFrame(ds['test'])
-    measure_raw(df)
-    # measure_rag(df)
+
+    res_dir = 'results'
+    # res_file = 'llama_raw.txt' # For normal SLM without RAG
+    # res_file = 'llama_logos.txt' # For normal Logos as RAG
+    # res_file = 'llama_auxi.txt' # For AuxiDB + RAG
+    # res_file = 'llama_multi_rag.txt' # For Multi RAG
+    res_file = 'llama_auxi_logos.txt'  # For AuxiLogos
+    measure_slm_results(df, res_dir=res_dir, res_file=res_file)

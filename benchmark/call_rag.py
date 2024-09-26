@@ -32,6 +32,31 @@ def call_rag(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
 
     return output
 
+def call_auxi_logos(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
+    '''
+    Helper function to call LogosDB as RAG model.
+    '''
+    cluster = LogosCluster('auxi_logos')
+    # port = 8885 # 8885 for extract AuxiLogos
+    port = 8886 # 8886 for abstract AuxiLogos
+    sumdb = SumDB('localhost', port)
+
+    #! Switch between smart_query and improved_query for different scenarios
+    if not use_improved_query:
+        results = smart_query(cluster, sumdb, query, k)
+    else:
+        results = improved_query(cluster, sumdb, query, k)
+
+    # concatenate the results
+    output = []
+    for res in results:
+        output.append(res['Summary'])
+
+    # remove duplicate
+    output = list(set(output))
+    return output
+
+
 def call_auxi_train(query: str, k: int=5) -> List[str]:
     '''
     Helper function to call SumDB as auxiliary training data.
@@ -74,13 +99,12 @@ if __name__ == '__main__':
     import json
     query = "What is a black hole?"
     # res = call_rag(query)
-    # print(res)
-
+    res = call_auxi_logos(query)
     # res = call_auxi_train(query)
-    
-    res = call_multi_rag(query)
+    # res = call_multi_rag(query)
+
     debug_dir = 'debug'
     
     with open(f'{debug_dir}/call_rag_py.json', 'w') as f:
         json.dump(res, f)
-    print(f'Finished writing to {debug_dir}/call_rag_py.json')
+    print(f'Finished writing result to {debug_dir}/call_rag_py.json')
