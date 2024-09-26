@@ -114,4 +114,4 @@ if __name__ == '__main__':
     total = time.perf_counter() - start
     total_min = total // 60
     print(
-        f'Finished processing {len(subjects)} subjects in {total:.4f} seconds (~ {total_min:.4f} minutes), with {num_calls} calls each.')
+        f'Finished processing {len(subjects)} subjects in {total:.4f} seconds (~ {total_min:.2f} minutes), with {num_calls} calls each.')
