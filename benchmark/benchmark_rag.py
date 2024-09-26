@@ -18,11 +18,9 @@ bash scripts/setup_sumdb.sh
 '''
 
 
-def benchmark_slm_rag(df: pd.DataFrame) -> None:
+def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_logos.txt', subject: str = SUBJECT, call_rag_func=call_rag) -> None:
     print('Starting benchmarking on SLM + Logos RAG...')
     start = time.perf_counter()
-    res_dir = 'results'
-    res_file = 'llama_logos.txt'
     res_path = os.path.join(res_dir, res_file)
 
     if not os.path.exists(res_dir):
@@ -47,9 +45,9 @@ def benchmark_slm_rag(df: pd.DataFrame) -> None:
 
         print(f'Querying RAG with question: {question}')
         print(f'Choices: {choices}')
-        rag_prompt = RAG_PROMPT % (SUBJECT)
+        rag_prompt = RAG_PROMPT % (subject)
         # get top 3 results from RAG
-        rag_results = call_rag(query=question, k=3)
+        rag_results = call_rag_func(query=question, k=3)
 
         # build the prompt for the SLM
 
@@ -61,7 +59,7 @@ def benchmark_slm_rag(df: pd.DataFrame) -> None:
         # for h, doc in enumerate(rag_results):
             # suffix_rag_prompt += f'Information {h+1}: {doc}.\n'
 
-        #suffix_rag_prompt += '''\nProvide only the letter (A, B, C, D, or E) that corresponds to the correct answer. Do not provide any explanation or reasoning.\nExample answer: A'''
+        # suffix_rag_prompt += '''\nProvide only the letter (A, B, C, D, or E) that corresponds to the correct answer. Do not provide any explanation or reasoning.\nExample answer: A'''
         suffix_rag_prompt += '''You MUST answer using this pattern:\nQuestion Analyze:{Your analyse}\nDo you use the information given (Yes/No): {Your choice, explain why}\nReasoning: {Your reasoning and explanation of your answer}\nFinal Choice:\n\nExample answer:\nQuestion Analyze: This question is asking about the name of the 7th planet from the Sun.\nDo you use the information given (Yes/No): Yes because the information given are relevant to the question\nReasoning: Base on my understanding, it should be Uranus.\nFinal Choice: D. Uranus\n\nRemember that in your final choice, you should only include your choice from the choices given, no explanation (because that is what you have done in the "Reasoning" part). Also, you can only choose one choice from the choices given.'''
 
         # suffix_rag_prompt += 'End of documents.\n'

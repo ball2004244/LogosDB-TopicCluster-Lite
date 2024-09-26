@@ -58,24 +58,6 @@ def benchmark_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'l
     print(f'Benchmarking done in {time.perf_counter() - start} seconds.')
 
 
-def auto_benchmark(df: pd.DataFrame, subject: str = SUBJECT, num_calls: int = 1) -> bool:
-    try:
-        print(f'STARTING AUTO BENCHMARK WITH {num_calls} CALLS...')
-        res_dir = f'results/raw_multi_calls_{subject}'
-        res_file = 'llama_raw_%d.txt'
-        for i in range(num_calls):
-            print(f'Auto benchmarking call {i+1}/{num_calls}...')
-            benchmark_raw(df, res_dir=res_dir, res_file=(res_file % i))
-            print(f'Finished benchmarking call {i+1}/{num_calls}...')
-
-        print(f'AUTO BENCHMARK DONE!')
-        return True
-
-    except Exception as e:
-        print(f'Error on auto_benchmark: {e}')
-        return False
-
-
 if __name__ == '__main__':
     ds = load_dataset("cais/mmlu", SUBJECT)
     print('Keys:', ds.keys())
@@ -86,6 +68,4 @@ if __name__ == '__main__':
     print(f'Length of test set: {len(df)}')
     print(f'Top 5 rows:\n{df.head()}')
 
-    # benchmark_raw(df)
-    num_calls = 100
-    auto_benchmark(df, num_calls=num_calls)
+    benchmark_raw(df)

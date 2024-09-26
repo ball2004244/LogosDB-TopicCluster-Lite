@@ -39,31 +39,8 @@ def measure_raw(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'lla
             f'Correct: {correct}, Wrong: {wrong}, Accuracy: {correct/len(df)}')
     print(f'Save result to {stats_path}')
 
-def auto_measure_raw(df: pd.DataFrame, subject: str = SUBJECT) -> bool:
-    try:
-        print(f'STARTING AUTO MEASURE...')
-        res_dir = os.path.join('results', f'raw_multi_calls_{subject}')
-        res_file = 'llama_raw_%d.txt'
-
-        # get lenght of that dir
-        num_calls = os.listdir(res_dir)
-
-        valid_num_calls = [f for f in num_calls if '_stats_' not in f]
-        
-        for i in range(len(valid_num_calls)):
-            print(f'Measuring file {i+1}/{len(valid_num_calls)}...')
-            measure_raw(df, res_dir=res_dir, res_file=(res_file % i))
-            print(f'Finished measuring file {i+1}/{len(valid_num_calls)}...')
-
-        print(f'AUTO MEASURE DONE!')
-        return True
-    except Exception as e:
-        print(f'Error on auto_measure_raw: {e}')
-        return False
 
 if __name__ == '__main__':
     ds = load_dataset("cais/mmlu", SUBJECT)
     df = pd.DataFrame(ds['test'])
-    # measure_raw(df)
-    
-    auto_measure_raw(df)
+    measure_raw(df)
