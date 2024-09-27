@@ -23,14 +23,13 @@ Every subject is run at least n times.
 '''
 
 
-def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw, subject: str = SUBJECT, num_calls: int = 1) -> bool:
+def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw, subject: str = SUBJECT, num_calls: int = 1, res_dir: str = 'results') -> bool:
     '''
     Benchmark a given function with multiple calls.
     '''
     try:
         log(
             f'STARTING AUTO BENCHMARK ON {subject} WITH {num_calls} CALLS...', LogType.INFO)
-        res_dir = f'results/auxi_train/{subject}'
         res_file = 'llama_raw_%d.txt'
 
         os.makedirs(res_dir, exist_ok=True)
@@ -54,7 +53,7 @@ def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw, s
         return False
 
 
-def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_raw, num_calls: int = 100) -> None:
+def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_raw, num_calls: int = 100, res_dir: str = 'results') -> None:
     '''
     Auto benchmark multiple subjects of MMLU dataset.
     '''
@@ -74,7 +73,7 @@ def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_ra
         df = pd.DataFrame(ds['test'])
 
         auto_benchmark(df, benchmark_func=benchmark_func,
-                       subject=sub, num_calls=num_calls)
+                       subject=sub, num_calls=num_calls, res_dir=res_dir)
 
         elapsed = time.perf_counter() - start
         log(
@@ -87,13 +86,13 @@ def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_ra
     log(f'TOTAL MULTI BENCHMARK ELAPSED TIME: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
 
-def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results, subject: str = SUBJECT) -> bool:
+def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results, subject: str = SUBJECT, res_dir: str = 'results', res_file: str = 'llama_raw_0.txt') -> bool:
     '''
     Generate benchmark stats for a given function with multiple calls.
     '''
     try:
         log(f'STARTING AUTO MEASURE...', LogType.INFO)
-        res_dir = os.path.join('results/auxi_train', subject)
+        res_dir = os.path.join(res_dir, subject)
         res_file = 'llama_raw_%d.txt'
 
         if not os.path.exists(res_dir):
@@ -103,7 +102,7 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results,
         # get all files in a directory
         num_files = os.listdir(res_dir)
 
-        valid_num_calls = [f for f in num_files if '_stats_' not in f]
+        valid_num_calls = [f for f in num_files if '_stats.txt' not in f]
 
         for i in range(len(valid_num_calls)):
             log(f'Measuring file {i+1}/{len(valid_num_calls)}...', LogType.INFO)
@@ -118,7 +117,7 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results,
         return False
 
 
-def multi_measure(subjects: List[str], measure_func: callable = measure_slm_results) -> None:
+def multi_measure(subjects: List[str], measure_func: callable = measure_slm_results, res_dir: str = 'results') -> None:
     '''
     Auto measure & create a report for multiple subjects of MMLU dataset.
     '''
@@ -128,7 +127,7 @@ def multi_measure(subjects: List[str], measure_func: callable = measure_slm_resu
     for sub in subjects:
         ds = load_dataset("cais/mmlu", sub)
         df = pd.DataFrame(ds['test'])
-        auto_measure(df, subject=sub, measure_func=measure_func)
+        auto_measure(df, subject=sub, measure_func=measure_func, res_dir=res_dir)
     elapsed = time.perf_counter() - start
     log(
         f'MULTI MEASURE - Finished gathering information from {len(subjects)} subjects...', LogType.SUCCESS)
@@ -160,6 +159,6 @@ if __name__ == '__main__':
     num_calls = 5
 
     #! do multi benchmark on LLama call
-    # multi_benchmark(subjects, benchmark_raw, num_calls)
-    multi_benchmark(subjects, benchmark_auxi_train, num_calls)
+    # multi_benchmark(subjects, benchmark_raw, num_calls, res_dir='results')
+    multi_benchmark(subjects, benchmark_auxi_train, num_calls, res_dir='results/auxi_train')
     multi_measure(subjects, measure_slm_results)

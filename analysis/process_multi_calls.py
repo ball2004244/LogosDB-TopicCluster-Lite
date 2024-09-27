@@ -21,7 +21,7 @@ def process_multi_calls(dir_path: str) -> pd.DataFrame:
     files = os.listdir(dir_path)
 
     # only take files with _stats_ in name
-    valid_files = [f for f in files if '_stats' in f]
+    valid_files = [f for f in files if '_stats.txt' in f]
 
     # collect data across multiple files
     data = []
