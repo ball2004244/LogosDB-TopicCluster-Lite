@@ -33,17 +33,22 @@ def measure_slm_results(df: pd.DataFrame, res_dir: str = 'results', res_file: st
             # Split by 'Final Choice' and take the second part
             splitted_ans = ans.split('Final Choice:')[1]
 
+            if not splitted_ans.strip():
+                res.append(answer)
+                continue
+
             # take only the first character of each answer
             final_answer = splitted_ans.strip()[0].upper()
             res.append(final_answer)
 
-    debug_dir = 'debug'
-    debug_file = f'{res_file.split(".")[0]}_measure_debug.txt'
-    debug_path = os.path.join(debug_dir, debug_file)
-    with open(debug_path, 'w') as f:
-        f.write(f'{topic_row}\n')
-        for i, r in enumerate(res):
-            f.write(f'{i+1}. {r}\n')
+    #! Uncomment this block to debug the result
+    # debug_dir = 'debug'
+    # debug_file = f'{res_file.split(".")[0]}_measure_debug.txt'
+    # debug_path = os.path.join(debug_dir, debug_file)
+    # with open(debug_path, 'w') as f:
+    #     f.write(f'{topic_row}\n')
+    #     for i, r in enumerate(res):
+    #         f.write(f'{i+1}. {r}\n')
 
     correct = 0
     wrong = 0

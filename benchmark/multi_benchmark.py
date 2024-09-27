@@ -87,7 +87,7 @@ def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_ra
     log(f'TOTAL MULTI BENCHMARK ELAPSED TIME: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
 
-def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results, subject: str = SUBJECT, res_dir: str = 'results', res_file: str = 'llama_raw_0.txt') -> bool:
+def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results, subject: str = SUBJECT, res_dir: str = 'results', res_file: str = 'llama_0.txt') -> bool:
     '''
     Generate benchmark stats for a given function with multiple calls.
     '''
@@ -103,12 +103,12 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results,
         # get all files in a directory
         num_files = os.listdir(full_res_dir)
 
-        valid_num_calls = [f for f in num_files if '_stats.txt' not in f]
+        valid_num_calls = [f for f in num_files if '_stats.txt' not in f and f.endswith('.txt')]
 
         for i in range(len(valid_num_calls)):
-            log(f'Measuring file {i+1}/{len(valid_num_calls)}...', LogType.INFO)
+            log(f'Measuring file {i+1}/{len(valid_num_calls)}: {valid_num_calls[i]}...', LogType.INFO)
             measure_func(df, res_dir=full_res_dir, res_file=(res_file % i))
-            log(f'Finished measuring file {i+1}/{len(valid_num_calls)}...',
+            log(f'Finished measuring file {i+1}/{len(valid_num_calls)}: {valid_num_calls[i]}...',
                 LogType.SUCCESS)
 
         log(f'AUTO MEASURE DONE!', LogType.SUCCESS)
@@ -159,10 +159,12 @@ if __name__ == '__main__':
     ]
     num_calls = 5
 
-    #! do multi benchmark on LLama call
+    #! BENCHMARK PROCESS
     res_dir = 'results/raw' # For raw training
-    multi_benchmark(subjects, benchmark_raw, num_calls, res_dir=res_dir)
+    # multi_benchmark(subjects, benchmark_raw, num_calls, res_dir=res_dir)
 
     # res_dir = 'results/auxi_train' # For auxiliary training
     # multi_benchmark(subjects, benchmark_auxi_train, num_calls, res_dir=res_dir)
+
+    #! MEASURE PROCESS
     multi_measure(subjects, measure_slm_results, res_dir=res_dir)
