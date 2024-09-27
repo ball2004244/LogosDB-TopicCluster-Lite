@@ -44,7 +44,7 @@ def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw, s
             elapsed = time.perf_counter() - start
             log(f'Finished benchmarking call {i+1}/{num_calls}...',
                 LogType.SUCCESS)
-            log(f'Elapsed time: {elapsed:.4f} seconds (~ {elapsed//3600:.2f} hours).', LogType.INFO)
+            log(f'Elapsed time: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
         log(f'AUTO BENCHMARK DONE FOR {subject}!', LogType.SUCCESS)
         return True
@@ -80,11 +80,11 @@ def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_ra
         log(
             f'MULTI BENCHMARK - Finished processing subject {i+1}/{len(subjects)}: {sub}...', LogType.SUCCESS)
         log(
-            f'MULTI BENCHMARK - Elapsed time: {elapsed:.4f} seconds (~ {elapsed//3600:.2f} hours).', LogType.INFO)
+            f'MULTI BENCHMARK - Elapsed time: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
     elapsed = time.perf_counter() - start
     log('MULTI BENCHMARK DONE!', LogType.SUCCESS)
-    log(f'TOTAL MULTI BENCHMARK ELAPSED TIME: {elapsed:.4f} seconds (~ {elapsed//3600:.2f} hours).', LogType.INFO)
+    log(f'TOTAL MULTI BENCHMARK ELAPSED TIME: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
 
 def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results, subject: str = SUBJECT) -> bool:
@@ -132,7 +132,7 @@ def multi_measure(subjects: List[str], measure_func: callable = measure_slm_resu
     elapsed = time.perf_counter() - start
     log(
         f'MULTI MEASURE - Finished gathering information from {len(subjects)} subjects...', LogType.SUCCESS)
-    log(f'MULTI MEASURE - Elapsed time: {elapsed:.4f} seconds (~ {elapsed//3600:.2f} hours).', LogType.INFO)
+    log(f'MULTI MEASURE - Elapsed time: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
 
 if __name__ == '__main__':
