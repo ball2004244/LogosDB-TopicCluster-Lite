@@ -1,7 +1,7 @@
 import sys
 import os
 
-# Add the absolute path to slm_tune to the system path
+# Add the absolute path of parent dir to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from typing import List

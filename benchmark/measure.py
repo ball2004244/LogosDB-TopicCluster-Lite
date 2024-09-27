@@ -8,7 +8,7 @@ This file will compared generated answers from SLM with given answers in the dat
 '''
 
 
-def measure_slm_results(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_logos.txt') -> None:
+def measure_slm_results(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_auxi_train.txt') -> None:
     print('Starting measuring on RAG SLM...')
     res_path = os.path.join(res_dir, res_file)
     topic_row = ''
@@ -87,5 +87,6 @@ if __name__ == '__main__':
     # res_file = 'llama_logos.txt' # For normal Logos as RAG
     # res_file = 'llama_auxi.txt' # For AuxiDB + RAG
     # res_file = 'llama_multi_rag.txt' # For Multi RAG
-    res_file = 'llama_auxi_logos.txt'  # For AuxiLogos
+    # res_file = 'llama_auxi_logos.txt'  # For AuxiLogos
+    res_file = 'llama_auxi_train.txt' #For auxi_train only
     measure_slm_results(df, res_dir=res_dir, res_file=res_file)
