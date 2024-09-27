@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from call_rag import call_auxi_logos
-from benchmark_rag import benchmark_slm_rag
+from benchmark_base import benchmark_slm_rag
 from constants import SUBJECT
 import pandas as pd
 
@@ -15,15 +15,13 @@ bash scripts/setup_sumdb.sh
 '''
 
 
-def benchmark_auxi_logos(df: pd.DataFrame) -> None:
+def benchmark_auxi_logos(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_auxi_logos.txt', subject: str = SUBJECT) -> None:
     '''
     This file for querying normal LogosDB as RAG but populated with Auxiliary Dataset.
     '''
     print('AuxiLogos Benchmarking...')
-    res_dir = 'results'
-    res_file = 'llama_auxi_logos.txt'
     benchmark_slm_rag(df, res_dir=res_dir, res_file=res_file,
-                      call_rag_func=call_auxi_logos)
+                      call_rag_func=call_auxi_logos, subject=subject)
     print(f'AuxiLogos Benchmarking done!')
 
 

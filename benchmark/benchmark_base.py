@@ -44,7 +44,7 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
 
         rag_prompt = f'''Read through the following {k} pieces of information, retreive and make sure you understand them, then base on that information with your understanding to answer the question. If you think the information pieces given are irrelevant, then you can use only your understanding.\n'''
 
-        print(f'Querying RAG with question: {question}')
+        print(f'Querying with question: {question}')
         print(f'Choices: {choices}')
 
         # if call_rag_func is not None, then call RAG

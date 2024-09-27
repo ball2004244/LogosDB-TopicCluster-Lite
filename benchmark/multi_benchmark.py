@@ -1,8 +1,8 @@
-from utils import log, LogType
 from typing import List
 from datasets import load_dataset
 from constants import SUBJECT
 from benchmark_raw import benchmark_raw
+from benchmark_auxi_train import benchmark_auxi_train
 from measure import measure_slm_results
 import os
 import sys
@@ -11,12 +11,13 @@ import pandas as pd
 
 # Add the absolute path of parent dir to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from utils import log, LogType
 
 
 '''
-This file is for multi-benchmarking LLama 3.1 8B logical thinking on MMLU dataset.
+A comprehensive testing file for benchmarking and measuring the SLM performance multiple times.
 
-It will run on multiple subjects of MMLU instead of just one.
+It do multi-benchmarking LLama 3.1 8B logical thinking on MMLU dataset. It will run on multiple subjects of MMLU instead of just one.
 
 Every subject is run at least n times.
 '''
@@ -32,9 +33,11 @@ def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw, s
         res_dir = f'results/auxi_train/{subject}'
         res_file = 'llama_raw_%d.txt'
 
+        os.makedirs(res_dir, exist_ok=True)
+
         for i in range(num_calls):
             start = time.perf_counter()
-            log(f'Auto benchmarking call {i+1}/{num_calls}...')
+            log(f'Auto benchmarking call {i+1}/{num_calls}...', LogType.INFO)
             benchmark_func(df, res_dir=res_dir, res_file=(
                 res_file % i), subject=subject)
 
@@ -55,6 +58,14 @@ def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_ra
     '''
     Auto benchmark multiple subjects of MMLU dataset.
     '''
+    log('STARTING MULTI BENCHMARK...', LogType.INFO)
+    log('CONFIGS:', LogType.INFO)
+    log(f'Benchmark function: {benchmark_func.__name__}', LogType.INFO)
+    log(f'Number of calls: {num_calls}', LogType.INFO)
+    log(f'Subjects count: {len(subjects)}', LogType.INFO)
+    log(f'All Subjects: {subjects}', LogType.INFO)
+
+    start = time.perf_counter()
     for i, sub in enumerate(subjects):
         start = time.perf_counter()
         log(
@@ -71,6 +82,10 @@ def multi_benchmark(subjects: List[str], benchmark_func: callable = benchmark_ra
         log(
             f'MULTI BENCHMARK - Elapsed time: {elapsed:.4f} seconds (~ {elapsed//3600:.2f} hours).', LogType.INFO)
 
+    elapsed = time.perf_counter() - start
+    log('MULTI BENCHMARK DONE!', LogType.SUCCESS)
+    log(f'TOTAL MULTI BENCHMARK ELAPSED TIME: {elapsed:.4f} seconds (~ {elapsed//3600:.2f} hours).', LogType.INFO)
+
 
 def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results, subject: str = SUBJECT) -> bool:
     '''
@@ -78,8 +93,12 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results,
     '''
     try:
         log(f'STARTING AUTO MEASURE...', LogType.INFO)
-        res_dir = os.path.join('results/auxi_train', f'/{subject}')
+        res_dir = os.path.join('results/auxi_train', subject)
         res_file = 'llama_raw_%d.txt'
+
+        if not os.path.exists(res_dir):
+            log(f'Error: No benchmark results found for {subject}!', LogType.ERROR)
+            return False
 
         # get all files in a directory
         num_files = os.listdir(res_dir)
@@ -119,29 +138,28 @@ def multi_measure(subjects: List[str], measure_func: callable = measure_slm_resu
 if __name__ == '__main__':
     import time
     start = time.perf_counter()
+    # subjects = [
+    #     'astronomy',
+    #     'high_school_chemistry',
+    #     'college_chemistry',
+    #     'high_school_macroeconomics',
+    #     'high_school_mathematics',
+    #     'college_mathematics',
+    #     'elementary_mathematics',
+    #     'high_school_microeconomics',
+    #     'high_school_physics',
+    #     'college_physics',
+    #     'conceptual_physics',
+    #     'high_school_psychology',
+    #     'professional_psychology',
+    #     'philosophy',
+    # ]
     subjects = [
-        'astronomy',
-        'high_school_chemistry',
-        'college_chemistry',
-        'high_school_macroeconomics',
-        'high_school_mathematics',
-        'college_mathematics',
-        'elementary_mathematics',
-        'high_school_microeconomics',
-        'high_school_physics',
-        'college_physics',
-        'conceptual_physics',
-        'high_school_psychology',
-        'professional_psychology',
-        'philosophy',
+        'astronomy'
     ]
-    num_calls = 20
+    num_calls = 5
 
-    #! do multi benchmark on raw LLama call
-    multi_benchmark(subjects, benchmark_raw, num_calls)
+    #! do multi benchmark on LLama call
+    # multi_benchmark(subjects, benchmark_raw, num_calls)
+    multi_benchmark(subjects, benchmark_auxi_train, num_calls)
     multi_measure(subjects, measure_slm_results)
-
-    total = time.perf_counter() - start
-    total_min = total // 60
-    print(
-        f'Finished processing {len(subjects)} subjects in {total:.4f} seconds (~ {total_min:.2f} minutes), with {num_calls} calls each.')

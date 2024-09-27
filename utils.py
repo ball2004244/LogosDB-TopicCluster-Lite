@@ -14,7 +14,7 @@ class LogType(Enum):
 console = Console()
 
 
-def log(text: str, log_type: LogType, log_file: str = 'debug.log') -> None:
+def log(text: str, log_type: LogType = LogType.WARNING, log_file: str = 'debug/benchmark.log') -> None:
     # Get the current time in UTC
     utc_now = datetime.now(pytz.utc)
     # Convert the current time to EST

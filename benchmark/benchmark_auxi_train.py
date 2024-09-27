@@ -1,19 +1,17 @@
 from datasets import load_dataset
 from call_rag import call_auxi_train
-from benchmark_rag import benchmark_slm_rag
+from benchmark_base import benchmark_slm_rag
 from constants import SUBJECT
 import pandas as pd
 
 
-def benchmark_auxi_train(df: pd.DataFrame) -> None:
+def benchmark_auxi_train(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_auxi_train.txt', subject: str = SUBJECT) -> None:
     '''
     This file only query from AuxiDB (SumDB) without follow-up call to LogosCluster.
     '''
     print('AuxiDB Benchmarking...')
-    res_dir = 'results'
-    res_file = 'llama_auxi_train.txt'
     benchmark_slm_rag(df, res_dir=res_dir, res_file=res_file,
-                      call_rag_func=call_auxi_train)
+                      call_rag_func=call_auxi_train, subject=subject)
     print(f'AuxiDB Benchmarking done!')
 
 
