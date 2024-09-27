@@ -30,14 +30,15 @@ def auto_benchmark(df: pd.DataFrame, benchmark_func: callable = benchmark_raw, s
     try:
         log(
             f'STARTING AUTO BENCHMARK ON {subject} WITH {num_calls} CALLS...', LogType.INFO)
-        res_file = 'llama_raw_%d.txt'
+        full_res_dir = os.path.join(res_dir, subject)
+        res_file = 'llama_%d.txt'
 
-        os.makedirs(res_dir, exist_ok=True)
+        os.makedirs(full_res_dir, exist_ok=True)
 
         for i in range(num_calls):
             start = time.perf_counter()
             log(f'Auto benchmarking call {i+1}/{num_calls}...', LogType.INFO)
-            benchmark_func(df, res_dir=res_dir, res_file=(
+            benchmark_func(df, res_dir=full_res_dir, res_file=(
                 res_file % i), subject=subject)
 
             elapsed = time.perf_counter() - start
@@ -92,21 +93,21 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results,
     '''
     try:
         log(f'STARTING AUTO MEASURE...', LogType.INFO)
-        res_dir = os.path.join(res_dir, subject)
-        res_file = 'llama_raw_%d.txt'
+        full_res_dir = os.path.join(res_dir, subject)
+        res_file = 'llama_%d.txt'
 
-        if not os.path.exists(res_dir):
+        if not os.path.exists(full_res_dir):
             log(f'Error: No benchmark results found for {subject}!', LogType.ERROR)
             return False
 
         # get all files in a directory
-        num_files = os.listdir(res_dir)
+        num_files = os.listdir(full_res_dir)
 
         valid_num_calls = [f for f in num_files if '_stats.txt' not in f]
 
         for i in range(len(valid_num_calls)):
             log(f'Measuring file {i+1}/{len(valid_num_calls)}...', LogType.INFO)
-            measure_func(df, res_dir=res_dir, res_file=(res_file % i))
+            measure_func(df, res_dir=full_res_dir, res_file=(res_file % i))
             log(f'Finished measuring file {i+1}/{len(valid_num_calls)}...',
                 LogType.SUCCESS)
 
@@ -159,6 +160,9 @@ if __name__ == '__main__':
     num_calls = 5
 
     #! do multi benchmark on LLama call
-    # multi_benchmark(subjects, benchmark_raw, num_calls, res_dir='results')
-    multi_benchmark(subjects, benchmark_auxi_train, num_calls, res_dir='results/auxi_train')
-    multi_measure(subjects, measure_slm_results)
+    res_dir = 'results/raw' # For raw training
+    multi_benchmark(subjects, benchmark_raw, num_calls, res_dir=res_dir)
+
+    # res_dir = 'results/auxi_train' # For auxiliary training
+    # multi_benchmark(subjects, benchmark_auxi_train, num_calls, res_dir=res_dir)
+    multi_measure(subjects, measure_slm_results, res_dir=res_dir)

@@ -60,7 +60,7 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
             rag_prompt += f'===== END OF INFORMATION {j+1} =====\n\n'
 
         if not rag_results:
-            rag_prompt += 'NO INFORMATION PROVIDED.\n'
+            rag_prompt += 'NO INFORMATION PROVIDED. USE YOUR UNDERSTANDING TO ANSWER THE QUESTION.\n'
 
         start_prompt = PREFIX_PROMPT % (subject)
         end_prompt = SUFFIX_PROMPT % (question, choices)
