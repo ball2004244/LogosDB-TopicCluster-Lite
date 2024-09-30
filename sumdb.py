@@ -1,6 +1,7 @@
 from typing import List, Dict
 from extract_sum_mp import mass_extract_summaries
 from abstract_sum import mass_abstract_sum
+from qlora_abstract_sum import mass_qlora_abstract_sum
 from cluster import LogosCluster
 import marqo
 
@@ -142,8 +143,11 @@ class SumDB:
                 insert_data = []
                 print(f'[INFO] Summarizing chunk {count}...')
                 # Each chunk is a list of rows (ID: int, Content: str, UpdatedAt: datetime)
-                # For each chunk, summarize the content
+                #! For each chunk, summarize the content using base model
                 summaries = mass_abstract_sum([row[1] for row in chunk])
+                
+                #! Use Qlora to summarize instead
+                # summaries = mass_qlora_abstract_sum([row[1] for row in chunk])
 
                 # Then modified the chunk with summarized content
                 for summary, row in zip(summaries, chunk):
