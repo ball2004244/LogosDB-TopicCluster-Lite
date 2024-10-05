@@ -3,6 +3,7 @@ from datasets import load_dataset
 from constants import SUBJECT
 from benchmark_raw import benchmark_raw
 from benchmark_auxi_train import benchmark_auxi_train
+from benchmark_auxi_logos import benchmark_auxi_logos
 from measure import measure_slm_results
 import os
 import sys
@@ -138,30 +139,44 @@ def multi_measure(subjects: List[str], measure_func: callable = measure_slm_resu
 if __name__ == '__main__':
     import time
     start = time.perf_counter()
-    # subjects = [
-    #     'astronomy',
-    #     'high_school_chemistry',
-    #     'college_chemistry',
-    #     'high_school_macroeconomics',
-    #     'high_school_mathematics',
-    #     'college_mathematics',
-    #     'elementary_mathematics',
-    #     'high_school_microeconomics',
-    #     'high_school_physics',
-    #     'college_physics',
-    #     'conceptual_physics',
-    #     'high_school_psychology',
-    #     'professional_psychology',
-    #     'philosophy',
-    # ]
+    # natural science
     subjects = [
-        'astronomy'
+        'abstract_algebra',
+        'college_physics',
+        'electrical_engineering',
+        'high_school_biology',
+        'machine_learning',
+        'high_school_chemistry',
     ]
+
+    # social science
+    # subjects = [
+    #     'high_school_geography',
+    #     'sociology',
+    #     'high_school_macroeconomics',
+    #     'professional_psychology',
+    #     'human_sexuality',
+    #     'public_relations',
+    # ]
+    
+    # humanities
+    # subjects = [
+    #     'high_school_world_history',
+    #     'logical_fallacies',
+    #     'world_religions',
+    #     'philosophy',
+    #     'business_ethics',
+    #     'moral_disputes',
+    # ]
+
     num_calls = 5
 
     #! BENCHMARK PROCESS
     res_dir = 'results/raw' # For raw training
-    # multi_benchmark(subjects, benchmark_raw, num_calls, res_dir=res_dir)
+    multi_benchmark(subjects, benchmark_raw, num_calls, res_dir)
+    
+    # res_dir = 'results/auxi_logos_extract' # For running AuxiLogos
+    # multi_benchmark(subjects, benchmark_auxi_logos, num_calls, res_dir=res_dir)
 
     # res_dir = 'results/auxi_train' # For auxiliary training
     # multi_benchmark(subjects, benchmark_auxi_train, num_calls, res_dir=res_dir)

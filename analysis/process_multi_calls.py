@@ -91,6 +91,7 @@ def agg_visualize(df: pd.DataFrame, save_path: str = 'analysis/figures') -> bool
         print("Warning: There are NaN values in the 'Accuracy' column after conversion.")
 
     plt.figure(figsize=(16, 10))
+    plt.ylim(0.2, 0.8)
     # Get unique subjects
     subjects = df['topic'].unique()
     for subject in subjects:
@@ -122,23 +123,37 @@ def agg_visualize(df: pd.DataFrame, save_path: str = 'analysis/figures') -> bool
 
 
 def main() -> None:
-    res_dir = 'results'
-    sub_res = 'raw_multi_calls_%s'
+    res_dir = 'results/auxi_logos_extract'
+    sub_res = '%s'
+    save_path ='analysis/figures/auxi_logos_extract/humanities'
+
+    # subjects = [
+    #     'abstract_algebra',
+    #     'college_physics',
+    #     'electrical_engineering',
+    #     'high_school_biology',
+    #     'machine_learning',
+    #     'high_school_chemistry',
+    # ]
+
+
+    """
     subjects = [
-        'high_school_biology',
-        'high_school_chemistry',
-        'high_school_computer_science',
-        'high_school_european_history',
         'high_school_geography',
-        'high_school_government_and_politics',
+        'sociology',
         'high_school_macroeconomics',
-        'high_school_mathematics',
-        'high_school_microeconomics',
-        'high_school_physics',
-        'high_school_psychology',
-        'high_school_statistics',
-        'high_school_us_history',
+        'professional_psychology',
+        'human_sexuality',
+        'public_relations',
+    ]
+    """
+    subjects = [
         'high_school_world_history',
+        'logical_fallacies',
+        'world_religions',
+        'philosophy',
+        'professional_law',
+        'moral_scenarios',
     ]
 
     print(f'Aggregating stats across {len(subjects)} subjects...')
@@ -147,10 +162,10 @@ def main() -> None:
     for sub in subjects:
         dir_path = os.path.join(res_dir, sub_res % sub)
         df = process_multi_calls(dir_path)
-        visualize(df, sub)
+        visualize(df, sub, save_path)
         concat_df = pd.concat([concat_df, df])
 
-    agg_visualize(concat_df)
+    agg_visualize(concat_df, save_path)
 
     print(f'Aggregation done in {time.perf_counter() - start} seconds.')
 

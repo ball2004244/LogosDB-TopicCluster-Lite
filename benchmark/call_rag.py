@@ -32,13 +32,13 @@ def call_rag(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
 
     return output
 
-def call_auxi_logos(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
+def call_auxi_logos(query: str, k: int=5, use_improved_query: bool=True) -> List[str]:
     '''
     Helper function to call LogosDB as RAG model.
     '''
     cluster = LogosCluster('auxi_logos')
-    # port = 8885 # 8885 for extract AuxiLogos
-    port = 8886 # 8886 for abstract AuxiLogos
+    port = 8885 # 8885 for extract AuxiLogos
+    # port = 8886 # 8886 for abstract AuxiLogos
     sumdb = SumDB('localhost', port)
 
     #! Switch between smart_query and improved_query for different scenarios

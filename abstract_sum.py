@@ -6,7 +6,9 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 
 # pip install transformers torch
-
+'''
+Do summarize with t5-base model
+'''
 
 class DocumentDataset(Dataset):
     def __init__(self, documents):
