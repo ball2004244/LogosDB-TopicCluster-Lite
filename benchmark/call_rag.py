@@ -57,7 +57,7 @@ def call_auxi_logos(query: str, k: int=5, use_improved_query: bool=True) -> List
     return output
 
 
-def call_auxi_train(query: str, k: int=5) -> List[str]:
+def call_auxi_db(query: str, k: int=5) -> List[str]:
     '''
     Helper function to call SumDB as auxiliary training data.
     '''
@@ -82,7 +82,7 @@ def call_multi_rag(query: str, k: int=5) -> List[str]:
     1. Use original queries to look up relevant docs from AuxiDB
     2. Each AuxiVector serves as intermediate queries to look up SumDB & LogosCluster
     '''
-    auxi_results = call_auxi_train(query, k)
+    auxi_results = call_auxi_db(query, k)
 
     # remove duplicate
     auxi_results = list(set(auxi_results))
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     query = "What is a black hole?"
     # res = call_rag(query)
     res = call_auxi_logos(query)
-    # res = call_auxi_train(query)
+    # res = call_auxi_db(query)
     # res = call_multi_rag(query)
 
     debug_dir = 'debug'
