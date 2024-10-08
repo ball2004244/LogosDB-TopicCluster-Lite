@@ -23,8 +23,10 @@ def main():
     sum_db_host = 'localhost'
     # sum_db_port = 8882 #! Default port for SumDB
     # sum_db_port = 8885 #! For AuxiLogos Extract
-    sum_db_port = 8886 #! For AuxiLogos Abstract
+    # sum_db_port = 8886 #! For AuxiLogos Abstract
     
+    sum_db_port = 8890 #! For AuxiLogosb Qlora Abstract
+
     print(f'Loading Config:')
     print(f'Input dataset: {in_dir}/{input_file}')
     print(f'Metadata file: {in_dir}/{metadata_file}')

@@ -1,8 +1,8 @@
-from process_multi_calls import process_multi_calls, agg_visualize
+from aggregate_stats import process_multi_calls, agg_visualize
 import pandas as pd
 import os
 
-def aggregate_df(res_dir: str = 'results', save_path: str = 'analysis/figures') -> pd.DataFrame:
+def aggregate_df(res_dir: str = 'results') -> pd.DataFrame:
     nat_sci = [
         'abstract_algebra',
         'college_physics',
@@ -26,8 +26,8 @@ def aggregate_df(res_dir: str = 'results', save_path: str = 'analysis/figures') 
         'logical_fallacies',
         'world_religions',
         'philosophy',
-        'professional_law',
-        'moral_scenarios',
+        'business_ethics',
+        'moral_disputes',
     ]
     
     subjects = [*nat_sci, *soc_sci, *humanities]
@@ -49,9 +49,15 @@ def calc_acc_all_topics(df: pd.DataFrame) -> float:
     return df['Accuracy'].mean()
 
 if __name__ == '__main__':
-    res_dir = 'results/auxi_logos_extract'
-    save_path ='analysis/figures/auxi_logos_extract/'
-    concat_df = aggregate_df(res_dir, save_path)
+    res_dir_prefix = 'results'
+    save_path_prefix = 'analysis/figures'
+    
+    process_dir = 'auxi_logos_extract' # For visualizing AuxiLogos
+    # process_dir = 'raw' # For visualizing raw call without RAG
+    
+    res_dir = os.path.join(res_dir_prefix, process_dir)
+    save_path = os.path.join(save_path_prefix, process_dir)
+    concat_df = aggregate_df(res_dir)
     
     # agg_visualize(concat_df, save_path)
     
