@@ -145,9 +145,10 @@ class SumDB:
                 # Each chunk is a list of rows (ID: int, Content: str, UpdatedAt: datetime)
                 #! For each chunk, summarize the content using base model
                 # summaries = mass_abstract_sum([row[1] for row in chunk])
-                
+
                 #! Use Qlora to summarize instead
-                summaries = mass_qlora_abstract_sum([row[1] for row in chunk])
+                BATCH_SIZE = 16 # number of strings can be process concurrently (optimally 24, normally 16)
+                summaries = mass_qlora_abstract_sum([row[1] for row in chunk], BATCH_SIZE)
 
                 # Then modified the chunk with summarized content
                 for summary, row in zip(summaries, chunk):
@@ -222,9 +223,16 @@ class SumDB:
 
 if __name__ == '__main__':
     import time
+    import json
     from rich import print
     start = time.perf_counter()
-    sumdb = SumDB(port=8886)
+    
+    # sum_db_port = 8882 #! Default port for SumDB
+    # sum_db_port = 8885 #! For AuxiLogos Extract
+    # sum_db_port = 8886 #! For AuxiLogos Abstract
+    sum_db_port = 8890 #! For AuxiLogosb Qlora Abstract
+
+    sumdb = SumDB(port=sum_db_port)
     # print('Inserting data...')
     # sumdb.insert(
     #     [
@@ -233,12 +241,12 @@ if __name__ == '__main__':
     #         {'row_id': '3', 'summary': 'This is 2nd testing scenario', 'topic': 'test'},
     #     ]
     # )
-    query = 'What is the capital of the USA?'
+    # query = 'What is the capital of the USA?'
+    query = 'What is blackhole?'
     print('Querying data...')
     queried_res = sumdb.query(query)
-    # with open("debug/sumdb_queried_res2.json", "a") as f:
-    # json.dump(queried_res, f)
-    print(sumdb.query(query))
+    with open("debug/sumdb_results.json", "w") as f:
+        json.dump(queried_res, f)
 
     # print('Querying all data...')
     # print(sumdb.query_all())

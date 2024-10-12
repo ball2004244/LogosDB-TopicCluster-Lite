@@ -173,14 +173,14 @@ if __name__ == '__main__':
     num_calls = 5
 
     #! BENCHMARK PROCESS
-    res_dir = 'results/raw' # For raw training
-    multi_benchmark(subjects, benchmark_raw, num_calls, res_dir)
+    # res_dir = 'results/raw' # For raw training
+    # multi_benchmark(subjects, benchmark_raw, num_calls, res_dir)
     
     # res_dir = 'results/auxi_logos_extract' # For running AuxiLogos
     # multi_benchmark(subjects, benchmark_auxi_logos, num_calls, res_dir=res_dir)
 
-    # res_dir = 'results/auxi_db' # For auxiliary training
-    # multi_benchmark(subjects, benchmark_auxi_db, num_calls, res_dir=res_dir)
+    res_dir = 'results/auxi_db' # For auxiliary training
+    multi_benchmark(subjects, benchmark_auxi_db, num_calls, res_dir=res_dir)
 
     #! MEASURE PROCESS
     multi_measure(subjects, measure_slm_results, res_dir=res_dir)
