@@ -91,11 +91,11 @@ def main():
         result = sumdb.summarize_node_abstract(node_name, cluster,
                                                CHUNK_SIZE=CHUNK_SIZE)
     print(
-        f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+        f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds (~{(time.perf_counter() - start) / 60:.2f} minutes)')
 
-    # if not result:
-    #     print('Unexpected error occurred during summarization, terminating...')
-    #     return
+    if not result:
+        print('Unexpected error occurred during summarization, terminating...')
+        return
 
     # Step 4: Smart Query, allow user search for similar content, first look up in SumDB, then in LogosCluster
     #! Check out smart_query.py & improved_query.py

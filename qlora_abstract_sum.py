@@ -107,8 +107,8 @@ if __name__ == "__main__":
 
     # simulate multiple documents
     start: float = time.perf_counter()
-    TOTAL_ROW: int = 100
-    BATCH_SIZE: int = 24  # Max viable chunk size is 32 for now
+    TOTAL_ROW: int = 128
+    BATCH_SIZE: int = 16  # Max viable chunk size is 32 for now
 
 
     doc = [raw_document] * TOTAL_ROW
