@@ -12,8 +12,6 @@ from typing import List, Dict
 from collections import defaultdict
 from cluster import LogosCluster
 from sumdb import SumDB
-import json
-
 
 def smart_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: int = 5) -> List[Dict[str, str]]:
     '''
@@ -71,16 +69,35 @@ def smart_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: i
 
 if __name__ == '__main__':
     import time
+    import json
+
+    print('START Smart Query')
     start = time.perf_counter()
     query = 'What is blackhole?'
-    sumdb = SumDB()
-    cluster = LogosCluster()
+    port = 8885  # for AuxiLogosb Extract
+    port = 8890  # for AuxiLogosb Qlora Abstract
+    sumdb = SumDB(port=port)
+    cluster = LogosCluster('auxi_logos')
     out_dir = 'debug'
 
-    # Perform smart query
-    results = smart_query(cluster, sumdb, query)
+    # # Perform smart query
+    # results = smart_query(cluster, sumdb, query)
 
-    with open(f'{out_dir}/smart_query_results.json', 'w') as f:
-        json.dump(results, f)
+    # with open(f'{out_dir}/smart_query_results.json', 'w') as f:
+    #     json.dump(results, f)
 
+
+    # Perform multi smart query
+    n = 10000
+    for i in range(n):
+        if (i + 1) % 1000 == 0:
+            print(f'Processing query {i+1}/{n}')
+        results = smart_query(cluster, sumdb, query)
+
+        # with open(f'{out_dir}/auxi_query_results.json', 'w') as f:
+        #     json.dump(results, f)
+
+        if (i + 1) % 1000 == 0:
+            print(f'Finished query {i+1}/{n}')
     print(f'Smart query done in {time.perf_counter() - start} seconds.')
+    print('END Smart Query')

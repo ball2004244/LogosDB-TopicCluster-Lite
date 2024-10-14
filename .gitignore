@@ -168,6 +168,9 @@ cluster_data/
 inputs/
 results/
 notes/
+debug/*
+!debug/__init__.py
 figures/
 *.txt
 *.json
+*.csv

@@ -44,39 +44,44 @@ cluster.set_input_file(os.path.join(in_dir, input_file))
 cluster.build_cluster()
 log(f'Build cluster: {time.perf_counter() - step_start:.2f} seconds', log_path)
 
-log('[Step 2] Summarizing 1 cluster node...', log_path)
-NODE = 'Astronomy'  # summarize 1 node at a time
+# NODE = 'Economics'  # summarize 1 node at a time
+NODES = ['Philosophy', 'Chemistry', 'Psychology'] # summarize multi nodes
 CHUNK_SIZE = 128  # this is the max number of rows to query from cluster
 BATCH_SIZE = 16  # this is the max number of rows to summarize at a time
 
-log(f'Config: NODE {NODE}, CHUNK {CHUNK_SIZE}, BATCH {BATCH_SIZE}', log_path)
+def summarize_nodes() -> None:
+    for NODE in NODES:
+        log('[Step 2] Summarizing 1 cluster node...', log_path)
+        log(f'Config: NODE {NODE}, CHUNK {CHUNK_SIZE}, BATCH {BATCH_SIZE}', log_path)
 
-# store summarized data with 3 cols: row_id, summary, topic
-summarized_data = []
+        # store summarized data with 3 cols: row_id, summary, topic
+        summarized_data = []
 
-count = 0
-for chunk in cluster.query_chunk(NODE, CHUNK_SIZE):
-    step_start = time.perf_counter()
-    log(f'Summarizing chunk {count}...', log_path)
-    summaries = mass_qlora_abstract_sum([row[1] for row in chunk], BATCH_SIZE)
+        count = 0
+        for chunk in cluster.query_chunk(NODE, CHUNK_SIZE):
+            step_start = time.perf_counter()
+            log(f'Summarizing chunk {count}...', log_path)
+            summaries = mass_qlora_abstract_sum([row[1] for row in chunk], BATCH_SIZE)
 
-    # append summarized data to list
-    for summary, row in zip(summaries, chunk):
-        summarized_data.append({'row_id': row[0], 'summary': summary, 'topic': NODE})
+            # append summarized data to list
+            for summary, row in zip(summaries, chunk):
+                summarized_data.append({'row_id': row[0], 'summary': summary, 'topic': NODE})
 
-    log(f'Finished summarizing chunk {count} in {time.perf_counter() - step_start:.2f} seconds', log_path)
-    count += 1
+            log(f'Finished summarizing chunk {count} in {time.perf_counter() - step_start:.2f} seconds', log_path)
+            count += 1
 
-log(f'FINISHED SUMMARIZE NODE {NODE}', log_path)
+        log(f'FINISHED SUMMARIZE NODE {NODE}', log_path)
 
-log(f'[Step 3] Saving summarized data to CSV...', log_path)
-df = pd.DataFrame(summarized_data)
-csv_path = os.path.join('debug', 'summarized_abstract_qlora.csv')
+        log(f'[Step 3] Saving summarized data to CSV...', log_path)
+        df = pd.DataFrame(summarized_data)
+        csv_path = os.path.join('debug', 'summarized_abstract_qlora.csv')
 
-if os.path.exists(csv_path):
-    df.to_csv(csv_path, mode='a', header=False, index=False)
-else:
-    df.to_csv(csv_path, mode='w', header=False, index=False)
+        if os.path.exists(csv_path):
+            df.to_csv(csv_path, mode='a', header=False, index=False)
+        else:
+            df.to_csv(csv_path, mode='w', header=False, index=False)
 
-log(f'Summarized data saved to {csv_path}', log_path)
-log(f'Time elapsed: {time.perf_counter() - start:.2f} seconds (~{(time.perf_counter() - start)/60:.2f} minutes)', log_path)
+        log(f'Summarized data saved to {csv_path}', log_path)
+        log(f'Time elapsed: {time.perf_counter() - start:.2f} seconds (~{(time.perf_counter() - start)/60:.2f} minutes)', log_path)
+
+summarize_nodes()

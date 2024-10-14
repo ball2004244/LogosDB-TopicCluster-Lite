@@ -10,7 +10,7 @@ from cluster import LogosCluster
 from sumdb import SumDB
 from smart_query import smart_query
 from improved_query import improved_query
-from auxi_query import auxi_query
+from auxi_db_query import auxi_query
 
 def call_rag(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
     '''
