@@ -4,13 +4,13 @@ from sumdb import SumDB
 import time
 
 '''
-This code used to populate auxi VectorDB with auxi training data.
+This code used to populate AuxiDB (Auxi VectorDb) with MMLU Auxi training data.
 This allows query high quality data on similarity search.
 '''
 
 def preprocess_data(ds: dict) -> List[Dict[str, str]]:
     '''
-    Preprocess the data to be inserted into the VectorDB.
+    Preprocess the data to be inserted into the Auxi VectorDB.
     '''
     data = []
     for i, row in enumerate(ds['train']):

@@ -2,7 +2,7 @@ from typing import Union
 from datasets import load_dataset
 from call_rag import call_rag
 from ollama import raw_call
-from constants import OLLAMA_MODEL, RAG_PROMPT, SUFFIX_PROMPT, SUBJECT
+from constants import OLLAMA_MODEL, PREFIX_PROMPT, SUFFIX_PROMPT, SUBJECT
 import pandas as pd
 import os
 import time
@@ -19,7 +19,7 @@ bash scripts/setup_sumdb.sh
 '''
 
 
-def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_logos.txt', subject: str = SUBJECT, call_rag_func: Union[None, callable] = None) -> None:
+def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_logos.txt', subject: str = SUBJECT, call_rag_func: Union[None, callable] = None, k: int = 3) -> None:
     print('Starting benchmarking on SLM + Logos RAG...')
     start = time.perf_counter()
     res_path = os.path.join(res_dir, res_file)
@@ -42,10 +42,9 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
                           item in zip(labels, choices)]
         choices = "; ".join(formatted_list)
 
-        k = 3
-        suffix_rag_prompt = f'''Read through the following {k} pieces of information, retreive and make sure you understand them, then base on that information with your understanding to answer the question. If you think the information pieces given are irrelevant, then you can use only your understanding.\n'''
+        rag_prompt = f'''Read through the following {k} pieces of information, retreive and make sure you understand them, then base on that information with your understanding to answer the question. If you think the information pieces given are irrelevant, then you can use only your understanding.\n'''
 
-        print(f'Querying RAG with question: {question}')
+        print(f'Querying with question: {question}')
         print(f'Choices: {choices}')
 
         # if call_rag_func is not None, then call RAG
@@ -56,16 +55,16 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
 
         # build the prompt for the SLM
         for j, doc in enumerate(rag_results):
-            suffix_rag_prompt += f'===== START OF INFORMATION {j+1} =====\n'
-            suffix_rag_prompt += f'{doc}\n'
-            suffix_rag_prompt += f'===== END OF INFORMATION {j+1} =====\n\n'
+            rag_prompt += f'===== START OF INFORMATION {j+1} =====\n'
+            rag_prompt += f'{doc}\n'
+            rag_prompt += f'===== END OF INFORMATION {j+1} =====\n\n'
 
         if not rag_results:
-            suffix_rag_prompt += 'NO INFORMATION PROVIDED.\n'
+            rag_prompt += 'NO INFORMATION PROVIDED. USE YOUR UNDERSTANDING TO ANSWER THE QUESTION.\n'
 
-        start_prompt = RAG_PROMPT % (subject)
+        start_prompt = PREFIX_PROMPT % (subject)
         end_prompt = SUFFIX_PROMPT % (question, choices)
-        final_prompt = f'{start_prompt}{suffix_rag_prompt}{end_prompt}'
+        final_prompt = f'{start_prompt}{rag_prompt}{end_prompt}'
 
         # store prompt for debugging
         debug_dir = 'debug'

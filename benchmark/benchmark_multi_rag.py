@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from call_rag import call_multi_rag
-from benchmark_rag import benchmark_slm_rag
+from benchmark_base import benchmark_slm_rag
 from constants import SUBJECT
 import pandas as pd
 
@@ -19,12 +19,13 @@ ParaDB: Splitted docs from WikiSum
 '''
 
 
-def benchmark_multi_rag(df: pd.DataFrame) -> None:
+def benchmark_multi_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str = 'llama_multi_rag.txt', subject: str = SUBJECT) -> None:
+    '''
+    This file is for benchmarking the MultiRAG architecture on MMLU dataset.
+    '''
     print('MULTI RAG Benchmarking...')
-    res_dir = 'results'
-    res_file = 'llama_multi_rag.txt'
     benchmark_slm_rag(df, res_dir=res_dir, res_file=res_file,
-                      call_rag_func=call_multi_rag)
+                      call_rag_func=call_multi_rag, subject=subject)
     print(f'MULTI RAG Benchmarking done!')
 
 

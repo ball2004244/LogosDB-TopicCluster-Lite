@@ -1,5 +1,5 @@
 '''
-This file contains the logic of smart query function.
+This file contains the logic of smart query function on AuxiDB
 
 The algorithm is as follows:
 1. Query SumDB with the user's query
@@ -9,7 +9,6 @@ The algorithm is as follows:
 
 from typing import List, Dict
 from sumdb import SumDB
-import json
 
 
 def auxi_query(sumdb: SumDB, query_vector: str, top_k: int = 5) -> List[Dict[str, str]]:
@@ -46,16 +45,34 @@ def auxi_query(sumdb: SumDB, query_vector: str, top_k: int = 5) -> List[Dict[str
 
 if __name__ == '__main__':
     import time
+    import datetime
+
+    print(
+        f'START testing Auxi Query at {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     start = time.perf_counter()
     query = 'What is blackhole?'
-    sumdb = SumDB()
+
+    port = 8884  # for AuxiDB
+    # port = 8885 # for AuxiLogosExtract
+    # port = 8890 # for AuxiLogosQloraAbstract
+    auxi_db = SumDB(port=port)
     out_dir = 'debug'
 
-    # Perform smart query
-    # results = smart_query(cluster, sumdb, query)
-    results = auxi_query(sumdb, query)
+    # Perform multi query
+    n = 10000
+    for i in range(n):
+        if (i + 1) % 1000 == 0:
+            print(f'Processing query {i+1}/{n}')
+        results = auxi_query(auxi_db, query)
 
-    with open(f'{out_dir}/auxi_query_results.json', 'w') as f:
-        json.dump(results, f)
+        # with open(f'{out_dir}/auxi_query_results.json', 'w') as f:
+        #     json.dump(results, f)
 
-    print(f'Auxi query done in {time.perf_counter() - start} seconds.')
+        if (i + 1) % 1000 == 0:
+            print(f'Finished query {i+1}/{n}')
+
+    print(
+        f'Auxi query done in {time.perf_counter() - start} seconds.(~{(time.perf_counter() - start) / 60:.2f} minutes)')
+
+    print(
+        f'FINISHED Auxi Query at {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
