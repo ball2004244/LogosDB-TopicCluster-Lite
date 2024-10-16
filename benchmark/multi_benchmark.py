@@ -141,14 +141,14 @@ if __name__ == '__main__':
     import time
     start = time.perf_counter()
     # natural science
-    subjects = [
-        'abstract_algebra',
-        'college_physics',
-        'electrical_engineering',
-        'high_school_biology',
-        'machine_learning',
-        'high_school_chemistry',
-    ]
+    # subjects = [
+    #     'abstract_algebra',
+    #     'college_physics',
+    #     'electrical_engineering',
+    #     'high_school_biology',
+    #     'machine_learning',
+    #     'high_school_chemistry',
+    # ]
 
     # social science
     # subjects = [
@@ -161,14 +161,14 @@ if __name__ == '__main__':
     # ]
 
     # humanities
-    # subjects = [
-    #     'high_school_world_history',
-    #     'logical_fallacies',
-    #     'world_religions',
-    #     'philosophy',
-    #     'business_ethics',
-    #     'moral_disputes',
-    # ]
+    subjects = [
+        'high_school_world_history',
+        'logical_fallacies',
+        'world_religions',
+        'philosophy',
+        'business_ethics',
+        'moral_disputes',
+    ]
 
     num_calls = 5
 
