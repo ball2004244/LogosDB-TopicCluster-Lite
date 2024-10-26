@@ -52,9 +52,9 @@ if __name__ == '__main__':
     res_dir_prefix = 'results'
     save_path_prefix = 'analysis/figures'
     
-    # process_dir = 'auxi_logos_abstract' # For measuring AuxiLogos Abstract
+    process_dir = 'auxi_logos_abstract' # For measuring AuxiLogos Abstract
     # process_dir = 'auxi_logos_extract' # For measuring AuxiLogos
-    process_dir = 'auxi_db' # For measuring accuracy of AuxiDB
+    # process_dir = 'auxi_db' # For measuring accuracy of AuxiDB
     # process_dir = 'raw' # For visualizing raw call without RAG
 
     
