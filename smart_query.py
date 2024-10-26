@@ -75,7 +75,7 @@ if __name__ == '__main__':
     start = time.perf_counter()
     query = 'What is blackhole?'
     port = 8885  # for AuxiLogosb Extract
-    port = 8890  # for AuxiLogosb Qlora Abstract
+    # port = 8890  # for AuxiLogosb Qlora Abstract
     sumdb = SumDB(port=port)
     cluster = LogosCluster('auxi_logos')
     out_dir = 'debug'
@@ -88,9 +88,9 @@ if __name__ == '__main__':
 
 
     # Perform multi smart query
-    n = 10000
+    n = 5000
     for i in range(n):
-        if (i + 1) % 1000 == 0:
+        if (i + 1) % 100 == 0:
             print(f'Processing query {i+1}/{n}')
         results = smart_query(cluster, sumdb, query)
 

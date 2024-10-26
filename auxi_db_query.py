@@ -59,9 +59,9 @@ if __name__ == '__main__':
     out_dir = 'debug'
 
     # Perform multi query
-    n = 10000
+    n = 5000
     for i in range(n):
-        if (i + 1) % 1000 == 0:
+        if (i + 1) % 100 == 0:
             print(f'Processing query {i+1}/{n}')
         results = auxi_query(auxi_db, query)
 
