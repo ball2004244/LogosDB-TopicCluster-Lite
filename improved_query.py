@@ -23,7 +23,7 @@ from sumdb import SumDB
 import json
 
 
-def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: int = 5, verbose: bool=False) -> List[Dict[str, str]]:
+def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: int = 5, verbose: bool = False, para_db_host: str = 'localhost', para_db_port: int = 8883) -> List[Dict[str, str]]:
     '''
     Perform an original smart query by querying SumDB first, then use the results to query LogosCluster
 
@@ -81,14 +81,15 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
             cluster_results, key=lambda x: x['Score'], reverse=True)
 
         if verbose:
-            print(f'Extracted {len(cluster_results)} results from LogosCluster')
+            print(
+                f'Extracted {len(cluster_results)} results from LogosCluster')
 
-        #* Extended Smart Query
+        # * Extended Smart Query
         if verbose:
             print(f'START EXTENDED SMART QUERY')
         # Step 5: Split each document by paragraph
-        # Set up paraDB (Split docs into paragraphs)
-        paraDB = SumDB('localhost', 8883)
+        # Set up paraDB on port 8883 (Split docs into paragraphs)
+        paraDB = SumDB(para_db_host, para_db_port)
 
         # clear paraDB to prepare for new data
         if verbose:
@@ -98,14 +99,14 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
         # split each document by paragraph
         if verbose:
             print(f'Splitting each document by paragraph...')
-        WORD_PER_PARAGRAPH = 150 #! Change this to the number of words per paragraph
+        WORD_PER_PARAGRAPH = 150  # ! Change this to the number of words per paragraph
         para_vectors = []
         para_id = 0
         for cluster_res in cluster_results:
             row_id = cluster_res['RowID']
             content = cluster_res['Content']
             topic = row_topic_map[row_id]
-            content = content.split(' ') # split by space
+            content = content.split(' ')  # split by space
 
             for i in range(0, len(content), WORD_PER_PARAGRAPH):
                 para = ' '.join(content[i:i+WORD_PER_PARAGRAPH])
@@ -117,8 +118,9 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
                 para_id += 1
 
         if verbose:
-            print(f'Extracted {len(para_vectors)} paragraphs from LogosCluster')
-        
+            print(
+                f'Extracted {len(para_vectors)} paragraphs from LogosCluster')
+
         # Step 6: Pass each paragraph vector to paraDB
         paraDB.insert(para_vectors)
 
@@ -130,7 +132,8 @@ def improved_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k
         relevant_paras = paraDB.query(query_vector, top_k)
 
         if verbose:
-            print(f'Extended smart query done. Extracted {len(relevant_paras)} relevant paragraphs')
+            print(
+                f'Extended smart query done. Extracted {len(relevant_paras)} relevant paragraphs')
 
         # Step 8: Reformat and Return the final results to the user
 

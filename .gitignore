@@ -174,3 +174,4 @@ figures/
 *.txt
 *.json
 *.csv
+doc_*
