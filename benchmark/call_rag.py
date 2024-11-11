@@ -1,16 +1,27 @@
+from typing import List
 import sys
 import os
 
 # Add the absolute path of parent dir to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from typing import List
 # import from the parent directory
 from cluster import LogosCluster
 from sumdb import SumDB
 from smart_query import smart_query
 from improved_query import improved_query
 from auxi_db_query import auxi_query
+
+'''
+Here are caller functions to call different type of RAG models.
+
+#! Query Algorithms:
+1. Basic query is SmartQuery, which queries SumDB first, then LogosCluster.
+2. ImprovedQuery is better SmartQuery, which queries SumDB first, then LogosCluster, shorten results by paragraphs with ParaDB.
+3. Auxiliary Query is traditional query method, which queries SumDB only. (In this case SumDB is full-content VectorDB
+
+#! Note: To run Improved Query, set use_improved_query to True, and you MUST run ParaDB container alongside with SumDB.
+'''
 
 def call_rag(query: str, k: int=5, use_improved_query: bool=False) -> List[str]:
     '''
@@ -37,9 +48,9 @@ def call_auxi_logos(query: str, k: int=5, use_improved_query: bool=True) -> List
     Helper function to call LogosDB as RAG model.
     '''
     cluster = LogosCluster('auxi_logos')
-    # port = 8885 # 8885 for extract AuxiDB
+    port = 8885 # 8885 for extract AuxiDB
     # port = 8886 # 8886 for abstract AuxiDB
-    port = 8890 # for Qlora abstract AuxiDB
+    # port = 8890 # for Qlora abstract AuxiDB
 
     sumdb = SumDB('localhost', port)
 

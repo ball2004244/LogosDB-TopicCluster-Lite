@@ -1,5 +1,6 @@
 OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "llama3.1:8b"
+# OLLAMA_MODEL = "llama3.1:8b"
+OLLAMA_MODEL = "qwen2.5:3b"
 
 PREFIX_PROMPT = '''You are an PhD expert in %s. Answer this multiple-choice question below with accuracy. Carefully analyze the question and select the correct option. If unsure, choose the most likely answer based on your understanding.\n'''
 
