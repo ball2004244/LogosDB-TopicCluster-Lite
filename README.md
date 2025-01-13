@@ -1,6 +1,10 @@
 # LogosDB-TopicCluster-Lite
 A lighter version of TopicCluster, built fully with Python and SQLite
 
+Simplified pipeline: TopicCluster -> SumAI -> SumDB.
+
+To setup SumAI, check out https://github.com/ball2004244/LogosDB-AI-Models.
+
 ## Prerequisites
 - Python 3.6 or higher
 - SQLite3
