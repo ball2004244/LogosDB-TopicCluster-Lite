@@ -1,4 +1,4 @@
-from benchmark_base import benchmark_slm_rag
+from .base import benchmark_slm_rag
 from constants import SUBJECT
 from datasets import load_dataset
 import pandas as pd

@@ -1,18 +1,12 @@
 from typing import List
 from datasets import load_dataset
-from constants import SUBJECT
-from benchmark_raw import benchmark_raw
-from benchmark_auxi_db import benchmark_auxi_db
-from benchmark_auxi_logos import benchmark_auxi_logos
-from benchmark_multi_rag import benchmark_multi_rag
-from measure import measure_slm_results
+from constants import SUBJECT, NUM_CALLS
+from benchmark.runners import benchmark_raw, benchmark_auxi_db, benchmark_auxi_logos, benchmark_multi_rag
+from benchmark.evals import measure_slm_results
 import os
-import sys
 import time
 import pandas as pd
 
-# Add the absolute path of parent dir to the system path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import log, LogType
 
 
@@ -99,16 +93,19 @@ def auto_measure(df: pd.DataFrame, measure_func: callable = measure_slm_results,
         res_file = 'llama_%d.txt'
 
         if not os.path.exists(full_res_dir):
-            log(f'Error: No benchmark results found for {subject}!', LogType.ERROR)
+            log(
+                f'Error: No benchmark results found for {subject}!', LogType.ERROR)
             return False
 
         # get all files in a directory
         num_files = os.listdir(full_res_dir)
 
-        valid_num_calls = [f for f in num_files if '_stats.txt' not in f and f.endswith('.txt')]
+        valid_num_calls = [
+            f for f in num_files if '_stats.txt' not in f and f.endswith('.txt')]
 
         for i in range(len(valid_num_calls)):
-            log(f'Measuring file {i+1}/{len(valid_num_calls)}: {valid_num_calls[i]}...', LogType.INFO)
+            log(
+                f'Measuring file {i+1}/{len(valid_num_calls)}: {valid_num_calls[i]}...', LogType.INFO)
             measure_func(df, res_dir=full_res_dir, res_file=(res_file % i))
             log(f'Finished measuring file {i+1}/{len(valid_num_calls)}: {valid_num_calls[i]}...',
                 LogType.SUCCESS)
@@ -130,15 +127,12 @@ def multi_measure(subjects: List[str], measure_func: callable = measure_slm_resu
     for sub in subjects:
         ds = load_dataset("cais/mmlu", sub)
         df = pd.DataFrame(ds['test'])
-        auto_measure(df, subject=sub, measure_func=measure_func, res_dir=res_dir)
+        auto_measure(df, subject=sub,
+                     measure_func=measure_func, res_dir=res_dir)
     elapsed = time.perf_counter() - start
     log(
         f'MULTI MEASURE - Finished gathering information from {len(subjects)} subjects...', LogType.SUCCESS)
-    log(f'MULTI MEASURE - Elapsed time: {elapsed:.4f} seconds (~ {elapsed/3600:.2f} hours).', LogType.INFO)
 
-
-if __name__ == '__main__':
-    import time
     start = time.perf_counter()
     # natural science
     subjects = [
@@ -170,14 +164,13 @@ if __name__ == '__main__':
     #     'moral_disputes',
     # ]
 
-    num_calls = 5
 
     #! BENCHMARK PROCESS
     # res_dir = 'results/raw' # For raw training
     # multi_benchmark(subjects, benchmark_raw, num_calls, res_dir)
 
-    res_dir = 'results/auxi_logos_extract' # For running AuxiLogos Extract
-    multi_benchmark(subjects, benchmark_auxi_logos, num_calls, res_dir=res_dir)
+    res_dir = 'results/auxi_logos_extract'  # For running AuxiLogos Extract
+    multi_benchmark(subjects, benchmark_auxi_logos, NUM_CALLS, res_dir=res_dir)
 
     # res_dir = 'results/auxi_logos_abstract' # For running AuxiLogos Abstract
     # multi_benchmark(subjects, benchmark_auxi_logos, num_calls, res_dir=res_dir)

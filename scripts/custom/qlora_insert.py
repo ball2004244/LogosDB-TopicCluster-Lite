@@ -1,4 +1,4 @@
-from sumdb import SumDB
+from src.core import SumDB
 import pandas as pd
 import time
 

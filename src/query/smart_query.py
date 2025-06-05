@@ -10,8 +10,8 @@ The algorithm is as follows:
 
 from typing import List, Dict
 from collections import defaultdict
-from cluster import LogosCluster
-from sumdb import SumDB
+from src.core import LogosCluster, SumDB
+
 
 def smart_query(cluster: LogosCluster, sumdb: SumDB, query_vector: str, top_k: int = 5) -> List[Dict[str, str]]:
     '''
@@ -85,7 +85,6 @@ if __name__ == '__main__':
 
     # with open(f'{out_dir}/smart_query_results.json', 'w') as f:
     #     json.dump(results, f)
-
 
     # Perform multi smart query
     n = 5000

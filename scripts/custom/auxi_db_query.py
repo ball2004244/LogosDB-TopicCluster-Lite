@@ -1,3 +1,6 @@
+from typing import List, Dict
+from src.core import SumDB
+
 '''
 This file contains the logic of smart query function on AuxiDB
 
@@ -6,9 +9,6 @@ The algorithm is as follows:
 2. Extract the top-k results from SumDB
 3. Return directly the results to the user
 '''
-
-from typing import List, Dict
-from sumdb import SumDB
 
 
 def auxi_query(sumdb: SumDB, query_vector: str, top_k: int = 5) -> List[Dict[str, str]]:

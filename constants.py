@@ -15,3 +15,6 @@ ANSWER_MAP = {
     'D': 3,
     'E': 4
 }
+
+
+NUM_CALLS = 5 # number of calls to benchmark for each subject

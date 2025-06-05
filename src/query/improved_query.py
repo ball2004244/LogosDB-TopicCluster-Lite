@@ -18,8 +18,7 @@ Part 2: Extended Smart Query
 
 from typing import List, Dict
 from collections import defaultdict
-from cluster import LogosCluster
-from sumdb import SumDB
+from src.core import LogosCluster, SumDB
 import json
 
 

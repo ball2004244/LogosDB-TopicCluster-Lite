@@ -2,7 +2,7 @@ from typing import List, Dict
 from extract_sum_mp import mass_extract_summaries
 from abstract_sum import mass_abstract_sum
 from qlora_abstract_sum import mass_qlora_abstract_sum
-from cluster import LogosCluster
+from src.core.cluster import LogosCluster
 import marqo
 
 '''

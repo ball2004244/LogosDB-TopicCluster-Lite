@@ -93,5 +93,5 @@ if __name__ == '__main__':
     # res_file = 'llama_auxi.txt' # For AuxiDB + RAG
     # res_file = 'llama_multi_rag.txt' # For Multi RAG
     # res_file = 'llama_auxi_logos.txt'  # For AuxiLogos
-    res_file = 'llama_auxi_db.txt' #For auxi_db only
+    res_file = 'llama_auxi_db.txt'  # For auxi_db only
     measure_slm_results(df, res_dir=res_dir, res_file=res_file)

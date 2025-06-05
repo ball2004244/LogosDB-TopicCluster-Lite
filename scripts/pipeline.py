@@ -1,10 +1,11 @@
-from cluster import LogosCluster
-from sumdb import SumDB
+from src.core.cluster import LogosCluster
+from src.core.sumdb import SumDB
 import time
 import os
 
 '''
-This file contains the main pipeline for the Logos project.
+This file contains the main inferencing pipeline for the Logos project.
+Flow: Dump documents into LogosCluster, summarize and store in SumDB, then query for similar content.
 '''
 
 

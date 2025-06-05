@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from call_rag import call_auxi_logos
-from benchmark_base import benchmark_slm_rag
+from .base import benchmark_slm_rag
 from constants import SUBJECT
 import pandas as pd
 
@@ -20,8 +20,7 @@ def benchmark_auxi_logos(df: pd.DataFrame, res_dir: str = 'results', res_file: s
     This file for querying normal LogosDB as RAG but populated with Auxiliary Dataset.
     '''
     print('AuxiLogos Benchmarking...')
-    benchmark_slm_rag(df, res_dir=res_dir, res_file=res_file,
-                      call_rag_func=call_auxi_logos, subject=subject)
+    benchmark_slm_rag(df, res_dir=res_dir, res_file=res_file, call_rag_func=call_auxi_logos, subject=subject)
     print(f'AuxiLogos Benchmarking done!')
 
 
