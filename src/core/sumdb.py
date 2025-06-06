@@ -1,8 +1,6 @@
 from typing import List, Dict
-from extract_sum_mp import mass_extract_summaries
-from abstract_sum import mass_abstract_sum
-from qlora_abstract_sum import mass_qlora_abstract_sum
-from src.core.cluster import LogosCluster
+from src.summarization import mass_qlora_abstract_sum, mass_abstract_sum, mass_extract_summaries
+from src.core import LogosCluster
 import marqo
 
 '''
@@ -101,6 +99,7 @@ class SumDB:
             print(f'Error at SumDB delete_all: {e}')
             return False
 
+    # TODO: Uncomment when built mass_extract_summaries with Cython
     def summarize_node(self, node: str, cluster: LogosCluster, CHUNK_SIZE: int = 128) -> bool:
         '''
         Summarize content from a single node in the cluster
@@ -146,9 +145,11 @@ class SumDB:
                 #! For each chunk, summarize the content using base model
                 # summaries = mass_abstract_sum([row[1] for row in chunk])
 
-                #! Use Qlora to summarize instead
-                BATCH_SIZE = 16 # number of strings can be process concurrently (optimally 24, normally 16)
-                summaries = mass_qlora_abstract_sum([row[1] for row in chunk], BATCH_SIZE)
+                #! OR Use Qlora to summarize
+                # number of strings can be process concurrently (optimally 24, normally 16)
+                BATCH_SIZE = 16
+                summaries = mass_qlora_abstract_sum(
+                    [row[1] for row in chunk], BATCH_SIZE)
 
                 # Then modified the chunk with summarized content
                 for summary, row in zip(summaries, chunk):
@@ -205,9 +206,11 @@ class SumDB:
             for node in cluster.nodes:
                 print(f'[INFO] Processing node {node}')
                 if abstract_mode:
-                    insert_status = self.summarize_node_abstract(node, cluster, CHUNK_SIZE)
+                    insert_status = self.summarize_node_abstract(
+                        node, cluster, CHUNK_SIZE)
                 else:
-                    insert_status = self.summarize_node(node, cluster, CHUNK_SIZE)
+                    insert_status = self.summarize_node(
+                        node, cluster, CHUNK_SIZE)
 
                 if not insert_status:
                     return False
@@ -226,11 +229,11 @@ if __name__ == '__main__':
     import json
     from rich import print
     start = time.perf_counter()
-    
+
     # sum_db_port = 8882 #! Default port for SumDB
     # sum_db_port = 8885 #! For AuxiLogos Extract
     # sum_db_port = 8886 #! For AuxiLogos Abstract
-    sum_db_port = 8890 #! For AuxiLogosb Qlora Abstract
+    sum_db_port = 8890  # ! For AuxiLogosb Qlora Abstract
 
     sumdb = SumDB(port=sum_db_port)
     # print('Inserting data...')

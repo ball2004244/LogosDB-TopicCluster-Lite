@@ -2,11 +2,11 @@ from constants import OLLAMA_URL
 import requests
 
 
-def raw_call(prompt: str, model="llama3.1:8b") -> str:
+def raw_call(prompt: str, model='llama3.1:8b') -> str:
     payload = {
-        "model": model,
-        "prompt": prompt,
-        "stream": False
+        'model': model,
+        'prompt': prompt,
+        'stream': False
     }
 
     response = requests.post(OLLAMA_URL, json=payload)

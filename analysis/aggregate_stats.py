@@ -124,8 +124,7 @@ def agg_visualize(df: pd.DataFrame, save_path: str = 'analysis/figures') -> bool
 
 def main() -> None:
     res_dir = 'results/auxi_logos_extract'
-    sub_res = '%s'
-    save_path ='analysis/figures/auxi_logos_extract/humanities'
+    save_path = 'analysis/figures/auxi_logos_extract/humanities'
 
     # subjects = [
     #     'abstract_algebra',
@@ -135,7 +134,6 @@ def main() -> None:
     #     'machine_learning',
     #     'high_school_chemistry',
     # ]
-
 
     """
     subjects = [
@@ -160,7 +158,7 @@ def main() -> None:
     start = time.perf_counter()
     concat_df = pd.DataFrame()
     for sub in subjects:
-        dir_path = os.path.join(res_dir, sub_res % sub)
+        dir_path = os.path.join(res_dir, sub)
         df = process_multi_calls(dir_path)
         visualize(df, sub, save_path)
         concat_df = pd.concat([concat_df, df])

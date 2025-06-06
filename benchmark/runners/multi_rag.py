@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from call_rag import call_multi_rag
-from benchmark.runners.benchmark_base import benchmark_slm_rag
+from benchmark.runners import benchmark_slm_rag
 from constants import SUBJECT
 import pandas as pd
 

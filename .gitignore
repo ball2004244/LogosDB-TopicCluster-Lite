@@ -175,3 +175,4 @@ figures/
 *.json
 *.csv
 doc_*
+vectdb_mount/

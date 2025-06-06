@@ -15,17 +15,17 @@ To setup SumAI, check out <https://github.com/ball2004244/LogosDB-AI-Models>. Or
 ## Installation
 
 1. Clone the repository
-2. Install the required packages
+2. Create conda environment
 
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    conda env create -f environment.yml
+    ```
 
 3. Install marqo-vectordb
 
-```bash
-bash scripts/setup_sumdb.sh
-```
+    ```bash
+    bash scripts/setup_sumdb.sh
+    ```
 
 ## Usage
 

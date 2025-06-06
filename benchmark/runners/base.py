@@ -32,7 +32,10 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
         f.write(f'Topic: {topic}\n')
 
     for i, row in df.iterrows():
-        print(f'Processing row {i}/{len(df)}...')
+        # log every 50 rows
+        if i % 50 == 0:
+            print(f'Processing row {i}/{len(df)}...')
+
         question = row['question']
         choices = row['choices']
 
@@ -44,8 +47,8 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
 
         rag_prompt = f'''Read through the following {k} pieces of information, retreive and make sure you understand them, then base on that information with your understanding to answer the question. If you think the information pieces given are irrelevant, then you can use only your understanding.\n'''
 
-        print(f'Querying with question: {question}')
-        print(f'Choices: {choices}')
+        # print(f'Querying with question: {question}')
+        # print(f'Choices: {choices}')
 
         # if call_rag_func is not None, then call RAG
         # otherwise, treat it as raw SLM call
@@ -67,11 +70,11 @@ def benchmark_slm_rag(df: pd.DataFrame, res_dir: str = 'results', res_file: str 
         final_prompt = f'{start_prompt}{rag_prompt}{end_prompt}'
 
         # store prompt for debugging
-        debug_dir = 'debug'
-        with open(f'{debug_dir}/prompt.txt', 'a') as f:
-            f.write(f'Prompt for question {i+1}\n')
-            f.write(f'{final_prompt}\n')
-            f.write('---------------------------\n')
+        # debug_dir = 'debug'
+        # with open(f'{debug_dir}/prompt.txt', 'a') as f:
+        #     f.write(f'Prompt for question {i+1}\n')
+        #     f.write(f'{final_prompt}\n')
+        #     f.write('---------------------------\n')
 
         res = raw_call(final_prompt, model=OLLAMA_MODEL)
         with open(res_path, 'a') as f:

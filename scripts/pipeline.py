@@ -1,5 +1,4 @@
-from src.core.cluster import LogosCluster
-from src.core.sumdb import SumDB
+from src.core import LogosCluster, SumDB
 import time
 import os
 
@@ -18,8 +17,7 @@ def main():
     # input_file = 'inp-100k.csv'
 
     # config logos cluster
-    # logos_dir = 'cluster_data' #! Default cluster data directory
-    logos_dir = 'auxi_logos'
+    logos_dir = 'cluster_data'  # ! Default cluster data directory
 
     # config sumdb
     sum_db_host = 'localhost'
