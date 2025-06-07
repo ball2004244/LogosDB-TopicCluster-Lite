@@ -12,12 +12,12 @@ def main():
     print('[Step 1] LAUNCHING LOGOS CLUSTER')
     in_dir = 'inputs'
     metadata_file = 'metadata.txt'
-    input_file = 'input.csv'
+    input_file = 'inputs.csv'
     # input_file = 'inp-10k.csv'  # ! Test on smaller dataset
     # input_file = 'inp-100k.csv'
 
     # config logos cluster
-    logos_dir = 'cluster_data'  # ! Default cluster data directory
+    logos_dir = 'auxi_cluster'  # ! Default cluster data directory
 
     # config sumdb
     sum_db_host = 'localhost'
@@ -55,7 +55,7 @@ def main():
     cluster.build_cluster()
     print(f'Build cluster: {time.perf_counter() - step_start:.2f} seconds')
 
-    #! Only populate the cluster with data when needed
+    #! Only populate the cluster with data ONCE
     # Populate the cluster with data
     # step_start = time.perf_counter()
     # print('Populating the cluster with data...')
@@ -73,24 +73,24 @@ def main():
     abstract_mode = True  # Toogle to switch between abstract and extractive summarization
     print('[Step 3] SUMMARIZING CLUSTER TO SUMDB')
     print(f'Enable abstract mode: {abstract_mode}')
-    # step_start = time.perf_counter()
-    # result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=CHUNK_SIZE, abstract_mode=abstract_mode)
+    step_start = time.perf_counter()
+    result = sumdb.summarize_cluster(cluster, CHUNK_SIZE=CHUNK_SIZE, abstract_mode=abstract_mode)
 
-    # print(f'Summarize all cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
+    print(f'Summarize all cluster to SumDB: {time.perf_counter() - step_start:.2f} seconds')
 
     #! INSTEAD OF SUMMARIZING THE WHOLE CLUSTER, WE CAN SUMMARIZE A SINGLE NODE
-    node_name = 'Economics'
-    print(
-        f'[Step 3] SUMMARIZING NODE {node_name} TO SUMDB, CHUNK SIZE: {CHUNK_SIZE}')
-    step_start = time.perf_counter()
-    if not abstract_mode:
-        result = sumdb.summarize_node(
-            node_name, cluster, CHUNK_SIZE=CHUNK_SIZE)
-    else:
-        result = sumdb.summarize_node_abstract(node_name, cluster,
-                                               CHUNK_SIZE=CHUNK_SIZE)
-    print(
-        f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds (~{(time.perf_counter() - start) / 60:.2f} minutes)')
+    # node_name = 'Economics'
+    # print(
+    #     f'[Step 3] SUMMARIZING NODE {node_name} TO SUMDB, CHUNK SIZE: {CHUNK_SIZE}')
+    # step_start = time.perf_counter()
+    # if not abstract_mode:
+    #     result = sumdb.summarize_node(
+    #         node_name, cluster, CHUNK_SIZE=CHUNK_SIZE)
+    # else:
+    #     result = sumdb.summarize_node_abstract(node_name, cluster,
+    #                                            CHUNK_SIZE=CHUNK_SIZE)
+    # print(
+    #     f'Summarize node to SumDB: {time.perf_counter() - step_start:.2f} seconds (~{(time.perf_counter() - step_start) / 60:.2f} minutes)')
 
     if not result:
         print('Unexpected error occurred during summarization, terminating...')
